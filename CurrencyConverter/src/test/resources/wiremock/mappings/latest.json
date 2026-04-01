@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/v1/latest",
+    "queryParameters": {
+      "base_currency": {
+        "equalTo": "EUR"
+      },
+      "currencies": {
+        "equalTo": "USD"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "latest-eur-usd-response.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

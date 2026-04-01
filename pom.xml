@@ -21,6 +21,7 @@
         <unirest.version>1.4.9</unirest.version>
         <mockito.version>5.15.2</mockito.version>
         <hamcrest.version>3.0</hamcrest.version>
+        <wiremock-jetty12.version>3.10.0</wiremock-jetty12.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
     </properties>
@@ -83,6 +84,12 @@
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest</artifactId>
                 <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wiremock</groupId>
+                <artifactId>wiremock-jetty12</artifactId>
+                <version>${wiremock-jetty12.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
