@@ -1,17 +1,22 @@
-package ar.edu.itba.dps.exchange;
+package ar.edu.itba.dps.exchange.infrastructure.api;
 
+import ar.edu.itba.dps.exchange.domain.CurrencyRate;
+import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailable;
+import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
+import ar.edu.itba.dps.exchange.infrastructure.http.HttpClient;
+import ar.edu.itba.dps.exchange.infrastructure.http.HttpResponse;
 import com.google.gson.Gson;
-import ar.edu.itba.dps.exchange.http.HttpClient;
-import ar.edu.itba.dps.exchange.http.HttpResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.net.URI;
 import java.util.Currency;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class CurrencyApiProvider implements CurrencyRateProvider {
+public class FreeCurrencyApiProvider implements CurrencyRateProvider {
+
+	private static final String API_KEY = "fca_live_JA6vg6L8PJQe85FIp4ohUOdZgUn6LjQ42sS07OAB";
+	private static final String BASE_URL = "https://api.freecurrencyapi.com/v1/";
 
 	private final HttpClient httpClient;
 
@@ -30,28 +35,27 @@ public class CurrencyApiProvider implements CurrencyRateProvider {
 		return new Gson().fromJson(response.body(), ExchangeRateResponse.class);
 	}
 
-	private HttpResponse getConversionRate(String fromCurrency, String toCurrency) {
-		final var response = this.httpClient.get(URI.create("https://api.currencyapi.com/v3/latest"),
-				Map.of("base_currency", fromCurrency, "currencies", toCurrency),
-				Map.of("accept", "application/json", "apikey", "cur_live_33r7xmpvu4kiAmeK4XZrotAn84qT4SMnPlP9Use1"));
-		return response;
+	private URI buildUrl(String endpoint) {
+		return URI.create(BASE_URL + endpoint);
 	}
 
-	// Define a nested class to represent the response body.
-	@Setter
-	private static class ExchangeRateResponse {
-		private Map<String, CurrencyData> data;
+	private HttpResponse getConversionRate(String fromCurrency, String toCurrency) {
+		return this.httpClient.get(buildUrl("latest"),
+				Map.of("base_currency", fromCurrency, "currencies", toCurrency),
+				Map.of("accept", "application/json", "apikey", API_KEY));
+	}
+
+	private record ExchangeRateResponse(Map<String, Double> data) {
 
 		public double getExchange(final String toCurrency) {
-			final var currencyData = this.data.get(toCurrency);
-			if (currencyData == null) {
+			if (this.data == null) {
+				throw new IllegalStateException("Missing exchange data");
+			}
+			final Double rate = this.data.get(toCurrency);
+			if (rate == null) {
 				throw new IllegalStateException("Missing exchange rate for currency: " + toCurrency);
 			}
-			return currencyData.value;
-		}
-
-		private record CurrencyData(String code, double value) {
+			return rate;
 		}
 	}
-
 }

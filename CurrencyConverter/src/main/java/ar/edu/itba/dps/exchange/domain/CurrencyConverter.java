@@ -1,4 +1,4 @@
-package ar.edu.itba.dps.exchange;
+package ar.edu.itba.dps.exchange.domain;
 
 import lombok.RequiredArgsConstructor;
 

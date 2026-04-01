@@ -1,5 +1,8 @@
 package ar.edu.itba.dps.exchange;
 
+import ar.edu.itba.dps.exchange.domain.CurrencyConverter;
+import ar.edu.itba.dps.exchange.domain.CurrencyRate;
+import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
 import org.junit.jupiter.api.Test;
 
 import java.util.Currency;

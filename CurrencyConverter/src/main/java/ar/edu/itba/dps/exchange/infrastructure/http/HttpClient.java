@@ -1,4 +1,4 @@
-package ar.edu.itba.dps.exchange.http;
+package ar.edu.itba.dps.exchange.infrastructure.http;
 
 import java.net.URI;
 import java.util.Map;

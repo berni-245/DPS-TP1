@@ -1,8 +1,6 @@
-package ar.edu.itba.dps.exchange;
+package ar.edu.itba.dps.exchange.infrastructure.http;
 
-import ar.edu.itba.dps.exchange.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
-import ar.edu.itba.dps.exchange.http.HttpClient;
 
 import java.net.URI;
 import java.util.Map;
