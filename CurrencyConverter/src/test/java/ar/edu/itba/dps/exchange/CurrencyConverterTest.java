@@ -5,7 +5,11 @@ import ar.edu.itba.dps.exchange.domain.CurrencyRate;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Currency;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -22,8 +26,8 @@ class CurrencyConverterTest {
 		// Given
 		final var provider = mock(CurrencyRateProvider.class);
 		when(provider.getCurrencyRate(ARS, USD)).thenReturn(new CurrencyRate(1));
-		final var fixedInstant = java.time.Instant.parse("2026-04-01T10:00:00Z");
-		final var clock = java.time.Clock.fixed(fixedInstant, java.time.ZoneId.of("UTC"));
+		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
+		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
 
 		// When
@@ -32,6 +36,21 @@ class CurrencyConverterTest {
 		// Then
 		assertThat(result.convertedAmount(), is(100.0));
 		assertThat(result.timestamp(), is(fixedInstant));
+	}
+
+	@Test
+	void testGetSupportedCurrencies() {
+		// Given
+		final var provider = mock(CurrencyRateProvider.class);
+		final var expectedCurrencies = List.of(USD, ARS);
+		when(provider.getAvailableCurrencies()).thenReturn(expectedCurrencies);
+		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
+
+		// When
+		final var result = converter.getSupportedCurrencies();
+
+		// Then
+		assertThat(result, is(expectedCurrencies));
 	}
 
 	// @Test
