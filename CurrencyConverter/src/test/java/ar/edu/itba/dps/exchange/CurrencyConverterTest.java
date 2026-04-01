@@ -22,13 +22,16 @@ class CurrencyConverterTest {
 		// Given
 		final var provider = mock(CurrencyRateProvider.class);
 		when(provider.getCurrencyRate(ARS, USD)).thenReturn(new CurrencyRate(1));
-		final var converter = new CurrencyConverter(provider);
+		final var fixedInstant = java.time.Instant.parse("2026-04-01T10:00:00Z");
+		final var clock = java.time.Clock.fixed(fixedInstant, java.time.ZoneId.of("UTC"));
+		final var converter = new CurrencyConverter(provider, clock);
 
 		// When
 		final var result = converter.convert(ARS, USD, 100);
 
 		// Then
-		assertThat(result, is(100.0));
+		assertThat(result.convertedAmount(), is(100.0));
+		assertThat(result.timestamp(), is(fixedInstant));
 	}
 
 	// @Test
