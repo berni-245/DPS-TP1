@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.time.LocalDate;
 import java.util.Currency;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -30,6 +31,19 @@ class FreeCurrencyApiProviderIT {
 		Assertions.assertEquals(2, currencies.size());
 		Assertions.assertTrue(currencies.contains(Currency.getInstance("USD")));
 		Assertions.assertTrue(currencies.contains(Currency.getInstance("EUR")));
+	}
+
+	@Test
+	void testGetHistoricalCurrencyRate() {
+		final var httpClient = new UnirestHttpClient();
+		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
+		final var eur = Currency.getInstance("EUR");
+		final var usd = Currency.getInstance("USD");
+		final var date = LocalDate.of(2022, 1, 1);
+
+		final var rate = provider.getHistoricalCurrencyRate(eur, usd, date);
+
+		Assertions.assertEquals(1.1347, rate.rate(), 1e-9);
 	}
 
 	@Test

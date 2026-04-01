@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +23,11 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 
 	private static final String ENDPOINT_LATEST = "latest";
 	private static final String ENDPOINT_CURRENCIES = "currencies";
+	private static final String ENDPOINT_HISTORICAL = "historical";
 
 	private static final String QUERY_BASE_CURRENCY = "base_currency";
 	private static final String QUERY_CURRENCIES = "currencies";
+	private static final String QUERY_DATE = "date";
 
 	private static final Map<String, String> JSON_REQUEST_HEADERS = Map.of(
 			"accept", "application/json",
@@ -60,6 +63,14 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		return body.getCurrencies();
 	}
 
+	@Override
+	public CurrencyRate getHistoricalCurrencyRate(Currency from, Currency to, LocalDate date) {
+		final HttpResponse response = this.getHistoricalConversionRate(from.getCurrencyCode(), to.getCurrencyCode(), date.toString());
+		final HistoricalExchangeRateResponse body = this.parseJsonOrUnavailable(response,
+				HistoricalExchangeRateResponse.class);
+		return new CurrencyRate(body.getExchange(date.toString(), to.getCurrencyCode()));
+	}
+
 	// FIX: The exception is not specific to each endpoint.
 	private <T> T parseJsonOrUnavailable(final HttpResponse response, final Class<T> type) {
 		if (response.statusCode() != HttpURLConnection.HTTP_OK) {
@@ -81,5 +92,16 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 
 	private HttpResponse getCurrencies() {
 		return this.httpClient.get(this.buildUrl(ENDPOINT_CURRENCIES), null, JSON_REQUEST_HEADERS);
+	}
+
+	private HttpResponse getHistoricalConversionRate(final String fromCurrency, final String toCurrency, final String date) {
+		return this.httpClient.get(
+				this.buildUrl(ENDPOINT_HISTORICAL),
+				Map.of(
+						QUERY_BASE_CURRENCY, fromCurrency,
+						QUERY_DATE, date,
+						QUERY_CURRENCIES, toCurrency
+				),
+				JSON_REQUEST_HEADERS);
 	}
 }
