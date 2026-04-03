@@ -41,6 +41,7 @@ class CurrencyConverterTest {
 
 		// Then
 		assertThat(result.convertedAmount(), is(100.0));
+		assertThat(result.rate(), is(1.0));
 		assertThat(result.timestamp(), is(fixedInstant));
 	}
 
@@ -62,6 +63,8 @@ class CurrencyConverterTest {
 		assertThat(results, hasSize(2));
 		assertThat(results.get(0).convertedAmount(), is(100.0));
 		assertThat(results.get(1).convertedAmount(), is(120.0));
+		assertThat(results.get(0).rate(), is(1.0));
+		assertThat(results.get(1).rate(), is(1.2));
 		assertThat(results.get(0).timestamp(), is(fixedInstant));
 		assertThat(results.get(1).timestamp(), is(fixedInstant));
 	}
@@ -80,6 +83,7 @@ class CurrencyConverterTest {
 
 		// Then
 		assertThat(result.convertedAmount(), is(1.0));
+		assertThat(result.rate(), is(1.0));
 		assertThat(result.timestamp(), is(fixedInstant));
 	}
 
@@ -118,6 +122,8 @@ class CurrencyConverterTest {
 		assertThat(results, hasSize(2));
 		assertThat(results.get(0).convertedAmount(), is(100.0));
 		assertThat(results.get(1).convertedAmount(), closeTo(85.0, 1e-9));
+		assertThat(results.get(0).rate(), is(1.0));
+		assertThat(results.get(1).rate(), is(0.85));
 		assertThat(results.get(0).timestamp(), is(expectedTimestamp));
 		assertThat(results.get(1).timestamp(), is(expectedTimestamp));
 	}

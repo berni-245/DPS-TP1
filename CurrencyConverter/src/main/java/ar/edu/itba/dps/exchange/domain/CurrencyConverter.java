@@ -14,14 +14,14 @@ public class CurrencyConverter {
 
 	public CurrencyConversionResponse convert(Currency from, Currency to, double amount) {
 		final var rate = this.currencyRateProvider.getCurrencyRate(from, to).rate();
-		return new CurrencyConversionResponse(amount * rate, Instant.now(clock));
+		return new CurrencyConversionResponse(amount * rate, rate, Instant.now(clock));
 	}
 
 	public List<CurrencyConversionResponse> convert(Currency from, List<Currency> to, double amount) {
 		final var currencyRates = this.currencyRateProvider.getCurrencyRates(from, to);
 		final var timestamp = Instant.now(clock);
 		return currencyRates.stream().map(currencyRate ->
-				new CurrencyConversionResponse(amount * currencyRate.rate(), timestamp)
+				new CurrencyConversionResponse(amount * currencyRate.rate(), currencyRate.rate(), timestamp)
 		).toList();
 	}
 
@@ -37,7 +37,7 @@ public class CurrencyConverter {
 		final var currencyRates = this.currencyRateProvider.getHistoricalCurrencyRates(from, to, date);
 		final var timestamp = date.atTime(this.currencyRateProvider.getDailyTimeOfRateMeasurement()).toInstant(ZoneOffset.UTC);
 		return currencyRates.stream().map(currencyRate ->
-				new CurrencyConversionResponse(amount * currencyRate.rate(), timestamp)
+				new CurrencyConversionResponse(amount * currencyRate.rate(), currencyRate.rate(), timestamp)
 		).toList();
 	}
 }
