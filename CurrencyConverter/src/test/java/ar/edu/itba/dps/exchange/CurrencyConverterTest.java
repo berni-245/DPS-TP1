@@ -7,11 +7,15 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Currency;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
@@ -94,24 +98,27 @@ class CurrencyConverterTest {
 		assertThat(result, is(expectedCurrencies));
 	}
 
-	// @Test
-	// void testConvert() {
-	// // Given
-	// final var httpClient = mock(UnirestHttpClient.class);
-	//
-	// final var mock = mock(HttpResponse.class);
-	//
-	// when(httpClient.get(any(), any(), any())).thenReturn(mock);
-	// when(mock.statusCode()).thenReturn(200);
-	// when(mock.body()).thenReturn(new
-	// JsonNode("{\"data\":{\"USD\":1.05}}").toString());
-	//
-	// final var converter = new CurrencyConverter(httpClient);
-	//
-	// // When
-	// final var result = converter.convert("EUR", "USD", 100);
-	//
-	// // Then
-	// assertThat(result, closeTo(105, 0.01));
-	// }
+	@Test
+	void testConvertToMultipleCurrenciesOnDate() {
+		// Given
+		final var provider = mock(CurrencyRateProvider.class);
+		final var targets = List.of(USD, EUR);
+		final var date = LocalDate.of(2022, 1, 1);
+		final var measurementTime = LocalTime.of(23, 59, 59);
+		when(provider.getHistoricalCurrencyRates(ARS, targets, date))
+				.thenReturn(List.of(new CurrencyRate(1.0), new CurrencyRate(0.85)));
+		when(provider.getDailyTimeOfRateMeasurement()).thenReturn(measurementTime);
+		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
+
+		// When
+		final var results = converter.convert(ARS, targets, 100, date);
+
+		// Then
+		final var expectedTimestamp = date.atTime(measurementTime).toInstant(ZoneOffset.UTC);
+		assertThat(results, hasSize(2));
+		assertThat(results.get(0).convertedAmount(), is(100.0));
+		assertThat(results.get(1).convertedAmount(), closeTo(85.0, 1e-9));
+		assertThat(results.get(0).timestamp(), is(expectedTimestamp));
+		assertThat(results.get(1).timestamp(), is(expectedTimestamp));
+	}
 }

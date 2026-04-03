@@ -48,6 +48,25 @@ class FreeCurrencyApiProviderIT {
 	}
 
 	@Test
+	void testGetHistoricalCurrencyRates() {
+		// Given
+		final var httpClient = new UnirestHttpClient();
+		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
+		final var eur = Currency.getInstance("EUR");
+		final var usd = Currency.getInstance("USD");
+		final var cad = Currency.getInstance("CAD");
+		final var date = LocalDate.of(2022, 1, 1);
+
+		// When
+		final var rates = provider.getHistoricalCurrencyRates(eur, List.of(usd, cad), date);
+
+		// Then
+		Assertions.assertEquals(2, rates.size());
+		Assertions.assertEquals(1.1347, rates.get(0).rate(), 1e-9);
+		Assertions.assertEquals(1.5623, rates.get(1).rate(), 1e-9);
+	}
+
+	@Test
 	void testGetCurrencyRate() {
 		// Given
 		final var httpClient = new UnirestHttpClient();

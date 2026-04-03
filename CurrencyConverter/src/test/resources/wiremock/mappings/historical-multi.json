@@ -1,0 +1,24 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/v1/historical",
+    "queryParameters": {
+      "base_currency": {
+        "equalTo": "EUR"
+      },
+      "date": {
+        "equalTo": "2022-01-01"
+      },
+      "currencies": {
+        "equalTo": "USD,CAD"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "historical-eur-usd-cad-response.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
