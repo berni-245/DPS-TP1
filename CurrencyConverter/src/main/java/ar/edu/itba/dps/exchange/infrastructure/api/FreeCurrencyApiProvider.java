@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 
@@ -47,12 +48,15 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 	}
 
 	@Override
-	public CurrencyRate getCurrencyRate(final Currency from, final Currency to) {
-		final HttpResponse response = this.getConversionRate(
-				from.getCurrencyCode(),
-				to.getCurrencyCode());
+	public List<CurrencyRate> getCurrencyRates(final Currency from, final List<Currency> to) {
+		final String currencies = to.stream()
+				.map(Currency::getCurrencyCode)
+				.collect(Collectors.joining(","));
+		final HttpResponse response = this.getConversionRates(from.getCurrencyCode(), currencies);
 		final ExchangeRateResponse rate = this.parseJsonOrUnavailable(response, ExchangeRateResponse.class);
-		return new CurrencyRate(rate.getExchange(to.getCurrencyCode()));
+		return to.stream()
+				.map(currency -> new CurrencyRate(rate.getExchange(currency.getCurrencyCode())))
+				.toList();
 	}
 
 	@Override
@@ -83,10 +87,10 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		return URI.create(this.baseUrl + endpoint);
 	}
 
-	private HttpResponse getConversionRate(final String fromCurrency, final String toCurrency) {
+	private HttpResponse getConversionRates(final String fromCurrency, final String currencies) {
 		return this.httpClient.get(
 				this.buildUrl(ENDPOINT_LATEST),
-				Map.of(QUERY_BASE_CURRENCY, fromCurrency, QUERY_CURRENCIES, toCurrency),
+				Map.of(QUERY_BASE_CURRENCY, fromCurrency, QUERY_CURRENCIES, currencies),
 				JSON_REQUEST_HEADERS);
 	}
 

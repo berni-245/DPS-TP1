@@ -5,7 +5,11 @@ import java.util.Currency;
 import java.util.List;
 
 public interface CurrencyRateProvider {
-	CurrencyRate getCurrencyRate(Currency from, Currency to);
+	default CurrencyRate getCurrencyRate(Currency from, Currency to) {
+		return getCurrencyRates(from, List.of(to)).getFirst();
+	}
+
+	List<CurrencyRate> getCurrencyRates(Currency from, List<Currency> to);
 
 	List<Currency> getAvailableCurrencies();
 

@@ -18,6 +18,14 @@ public class CurrencyConverter {
 		return new CurrencyConversionResponse(amount * rate, Instant.now(clock));
 	}
 
+	public List<CurrencyConversionResponse> convert(Currency from, List<Currency> to, double amount) {
+		final var currencyRates = this.currencyRateProvider.getCurrencyRates(from, to);
+		final var timestamp = Instant.now(clock);
+		return currencyRates.stream().map(currencyRate ->
+				new CurrencyConversionResponse(amount * currencyRate.rate(), timestamp)
+		).toList();
+	}
+
 	public CurrencyConversionResponse getCurrencyRate(Currency from, Currency to) {
 		return convert(from, to, 1);
 	}

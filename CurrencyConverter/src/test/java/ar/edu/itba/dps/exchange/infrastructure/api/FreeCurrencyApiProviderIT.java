@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.LocalDate;
 import java.util.Currency;
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
@@ -47,7 +48,7 @@ class FreeCurrencyApiProviderIT {
 	}
 
 	@Test
-	void testgetCurrencyRate() {
+	void testGetCurrencyRate() {
 		// Given
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
@@ -59,5 +60,23 @@ class FreeCurrencyApiProviderIT {
 
 		// Then
 		Assertions.assertEquals(1.0847, rate.rate(), 1e-9);
+	}
+
+	@Test
+	void testGetCurrencyRates() {
+		// Given
+		final var httpClient = new UnirestHttpClient();
+		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
+		final var eur = Currency.getInstance("EUR");
+		final var usd = Currency.getInstance("USD");
+		final var cad = Currency.getInstance("CAD");
+
+		// When
+		final var rates = provider.getCurrencyRates(eur, List.of(usd, cad));
+
+		// Then
+		Assertions.assertEquals(2, rates.size());
+		Assertions.assertEquals(1.0847, rates.get(0).rate(), 1e-9);
+		Assertions.assertEquals(1.4823, rates.get(1).rate(), 1e-9);
 	}
 }
