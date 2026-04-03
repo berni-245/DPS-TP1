@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 
 	private static final Gson GSON = new Gson();
 
+	// TODO move this to a private file prolly
 	private static final String API_KEY = "fca_live_JA6vg6L8PJQe85FIp4ohUOdZgUn6LjQ42sS07OAB";
 	private static final String DEFAULT_BASE_URL = "https://api.freecurrencyapi.com/v1/";
 
@@ -53,9 +55,9 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 				.map(Currency::getCurrencyCode)
 				.collect(Collectors.joining(","));
 		final HttpResponse response = this.getConversionRates(from.getCurrencyCode(), currencies);
-		final ExchangeRateResponse rate = this.parseJsonOrUnavailable(response, ExchangeRateResponse.class);
+		final ExchangeRateResponse rates = this.parseJsonOrUnavailable(response, ExchangeRateResponse.class);
 		return to.stream()
-				.map(currency -> new CurrencyRate(rate.getExchange(currency.getCurrencyCode())))
+				.map(currency -> new CurrencyRate(rates.getExchange(currency.getCurrencyCode())))
 				.toList();
 	}
 
@@ -68,11 +70,22 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 	}
 
 	@Override
-	public CurrencyRate getHistoricalCurrencyRate(Currency from, Currency to, LocalDate date) {
-		final HttpResponse response = this.getHistoricalConversionRate(from.getCurrencyCode(), to.getCurrencyCode(), date.toString());
-		final HistoricalExchangeRateResponse body = this.parseJsonOrUnavailable(response,
+	public List<CurrencyRate> getHistoricalCurrencyRates(Currency from, List<Currency> to, LocalDate date) {
+		final String currencies = to.stream()
+				.map(Currency::getCurrencyCode)
+				.collect(Collectors.joining(","));
+		final HttpResponse response = this.getHistoricalConversionRate(from.getCurrencyCode(), currencies, date.toString());
+		final HistoricalExchangeRateResponse rates = this.parseJsonOrUnavailable(response,
 				HistoricalExchangeRateResponse.class);
-		return new CurrencyRate(body.getExchange(date.toString(), to.getCurrencyCode()));
+		return to.stream()
+				.map(currency -> new CurrencyRate(rates.getExchange(date.toString(), currency.getCurrencyCode())))
+				.toList();
+
+	}
+
+	@Override
+	public LocalTime getDailyTimeOfRateMeasurement() {
+		return LocalTime.of(23, 59, 59);
 	}
 
 	// FIX: The exception is not specific to each endpoint.
@@ -98,13 +111,13 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		return this.httpClient.get(this.buildUrl(ENDPOINT_CURRENCIES), null, JSON_REQUEST_HEADERS);
 	}
 
-	private HttpResponse getHistoricalConversionRate(final String fromCurrency, final String toCurrency, final String date) {
+	private HttpResponse getHistoricalConversionRate(final String fromCurrency, final String currencies, final String date) {
 		return this.httpClient.get(
 				this.buildUrl(ENDPOINT_HISTORICAL),
 				Map.of(
 						QUERY_BASE_CURRENCY, fromCurrency,
 						QUERY_DATE, date,
-						QUERY_CURRENCIES, toCurrency
+						QUERY_CURRENCIES, currencies
 				),
 				JSON_REQUEST_HEADERS);
 	}

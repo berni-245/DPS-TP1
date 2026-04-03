@@ -2,8 +2,7 @@ package ar.edu.itba.dps.exchange.domain;
 
 import lombok.RequiredArgsConstructor;
 
-import java.time.Clock;
-import java.time.Instant;
+import java.time.*;
 import java.util.Currency;
 import java.util.List;
 
@@ -32,5 +31,13 @@ public class CurrencyConverter {
 
 	public List<Currency> getSupportedCurrencies() {
 		return this.currencyRateProvider.getAvailableCurrencies();
+	}
+
+	public List<CurrencyConversionResponse> convert(Currency from, List<Currency> to, double amount, LocalDate date) {
+		final var currencyRates = this.currencyRateProvider.getHistoricalCurrencyRates(from, to, date);
+		final var timestamp = date.atTime(this.currencyRateProvider.getDailyTimeOfRateMeasurement()).toInstant(ZoneOffset.UTC);
+		return currencyRates.stream().map(currencyRate ->
+				new CurrencyConversionResponse(amount * currencyRate.rate(), timestamp)
+		).toList();
 	}
 }
