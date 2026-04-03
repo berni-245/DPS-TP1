@@ -39,6 +39,23 @@ class CurrencyConverterTest {
 	}
 
 	@Test
+	void testGetExchangeRate() {
+		// Given
+		final var provider = mock(CurrencyRateProvider.class);
+		when(provider.getCurrencyRate(ARS, USD)).thenReturn(new CurrencyRate(1));
+		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
+		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
+		final var converter = new CurrencyConverter(provider, clock);
+
+		// When
+		final var result = converter.getCurrencyRate(ARS, USD);
+
+		// Then
+		assertThat(result.convertedAmount(), is(1.0));
+		assertThat(result.timestamp(), is(fixedInstant));
+	}
+
+	@Test
 	void testGetSupportedCurrencies() {
 		// Given
 		final var provider = mock(CurrencyRateProvider.class);

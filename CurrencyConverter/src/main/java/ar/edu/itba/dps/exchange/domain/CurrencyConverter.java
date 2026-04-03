@@ -18,8 +18,11 @@ public class CurrencyConverter {
 		return new CurrencyConversionResponse(amount * rate, Instant.now(clock));
 	}
 
+	public CurrencyConversionResponse getCurrencyRate(Currency from, Currency to) {
+		return convert(from, to, 1);
+	}
+
 	public List<Currency> getSupportedCurrencies() {
 		return this.currencyRateProvider.getAvailableCurrencies();
 	}
-
 }
