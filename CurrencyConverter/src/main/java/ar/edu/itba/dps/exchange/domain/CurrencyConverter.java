@@ -2,7 +2,10 @@ package ar.edu.itba.dps.exchange.domain;
 
 import lombok.RequiredArgsConstructor;
 
-import java.time.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Currency;
 import java.util.List;
 
@@ -13,8 +16,7 @@ public class CurrencyConverter {
 	private final Clock clock;
 
 	public CurrencyConversionResponse convert(Currency from, Currency to, double amount) {
-		final var rate = this.currencyRateProvider.getCurrencyRate(from, to).rate();
-		return new CurrencyConversionResponse(amount * rate, rate, Instant.now(clock));
+		return convert(from, List.of(to), amount).getFirst();
 	}
 
 	public List<CurrencyConversionResponse> convert(Currency from, List<Currency> to, double amount) {
@@ -25,8 +27,10 @@ public class CurrencyConverter {
 		).toList();
 	}
 
-	public CurrencyConversionResponse getCurrencyRate(Currency from, Currency to) {
-		return convert(from, to, 1);
+	public CurrencyRateQuote getCurrencyRate(Currency from, Currency to) {
+		final var currencyRates = this.currencyRateProvider.getCurrencyRates(from, List.of(to));
+		final var currencyRate = currencyRates.getFirst();
+		return new CurrencyRateQuote(currencyRate.rate(), Instant.now(clock));
 	}
 
 	public List<Currency> getSupportedCurrencies() {

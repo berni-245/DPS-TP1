@@ -42,7 +42,7 @@ class FreeCurrencyApiProviderIT {
 		final var usd = Currency.getInstance("USD");
 		final var date = LocalDate.of(2022, 1, 1);
 
-		final var rate = provider.getHistoricalCurrencyRate(eur, usd, date);
+		final var rate = provider.getHistoricalCurrencyRates(eur, List.of(usd), date).getFirst();
 
 		Assertions.assertEquals(1.1347, rate.rate(), 1e-9);
 	}
@@ -75,7 +75,7 @@ class FreeCurrencyApiProviderIT {
 		final var usd = Currency.getInstance("USD");
 
 		// When
-		final var rate = provider.getCurrencyRate(eur, usd);
+		final var rate = provider.getCurrencyRates(eur, List.of(usd)).getFirst();
 
 		// Then
 		Assertions.assertEquals(1.0847, rate.rate(), 1e-9);
