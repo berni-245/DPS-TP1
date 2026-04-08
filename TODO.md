@@ -44,7 +44,6 @@ Prioridad: **código limpio** y separación negocio / infraestructura, como pide
 
 ## Código limpio y seguridad
 
-- [ ] **API key:** no versionar claves en código; usar variable de entorno o archivo local ignorado por git (documentar en README el nombre de la variable).
 - [ ] Eliminar o resolver comentarios `TODO` / `FIX` en `FreeCurrencyApiProvider` y equivalentes.
 - [ ] Sustituir `System.err` en el cliente HTTP por **logging** (el proyecto ya declara Log4j).
 - [ ] Mensajes de error y logs: informativos para el usuario/desarrollador sin filtrar secretos.
