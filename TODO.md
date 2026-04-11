@@ -12,7 +12,7 @@ Prioridad: **código limpio** y separación negocio / infraestructura, como pide
 | 1   | Listar monedas soportadas                       | Hecho                                                                        | —                                                           |
 | 2   | Timestamp en la respuesta de conversión         | Hecho (`Instant.now(clock)` en cotizaciones latest; fecha+hora en histórico) | —                                                           |
 | 3   | Solo cotización entre dos monedas (sin monto)   | Hecho (`getCurrencyRate` → `CurrencyRateQuote`)                              | —                                                           |
-| 4   | Errores de conexión/API claros (404, 500, etc.) | **Pendiente**                                                                | Ver sección [HU 4 — Errores](#hu-4--errores-conexión-y-api) |
+| 4   | Errores de conexión/API claros (404, 500, etc.) | Hecho (`CurrencyRateRemoteException`, `CurrencyRateTransportException`, tests) | —                                                           |
 | 5   | Un monto a varias monedas                       | Hecho                                                                        | —                                                           |
 | 6   | Histórico por fecha y varias monedas            | Hecho                                                                        | —                                                           |
 | 7   | Cotización usada por moneda en la respuesta     | Hecho (`rate` en cada ítem)                                                  | —                                                           |
@@ -23,10 +23,10 @@ Prioridad: **código limpio** y separación negocio / infraestructura, como pide
 
 **Problema actual:** `FreeCurrencyApiProvider` lanza `CurrencyRateNotAvailable` sin código HTTP ni mensaje útil; `UnirestHttpClient` atrapa excepciones y devuelve un cuerpo JSON falso con status 500, ocultando fallos de red.
 
-- [ ] Propagar fallos de red / timeout de forma explícita (no simular 200/JSON con error genérico).
-- [ ] Para respuestas HTTP no exitosas, exponer **código de estado** (p. ej. 404, 500) y, si aplica, mensaje o cuerpo seguro de la API.
-- [ ] Definir excepciones o tipos de error de **dominio** que el usuario de la biblioteca pueda interpretar, sin acoplar nombres HTTP al negocio si se prefiere una capa intermedia.
-- [ ] Añadir tests unitarios (y/o integración) que cubran 404, 500 y fallo de conexión simulado.
+- [x] Propagar fallos de red / timeout de forma explícita (no simular 200/JSON con error genérico).
+- [x] Para respuestas HTTP no exitosas, exponer **código de estado** (p. ej. 404, 500) y, si aplica, mensaje o cuerpo seguro de la API.
+- [x] Definir excepciones o tipos de error de **dominio** que el usuario de la biblioteca pueda interpretar, sin acoplar nombres HTTP al negocio si se prefiere una capa intermedia.
+- [x] Añadir tests unitarios (y/o integración) que cubran 404, 500 y fallo de conexión simulado.
 
 ---
 
@@ -68,4 +68,4 @@ Prioridad: **código limpio** y separación negocio / infraestructura, como pide
 
 - [ ] `mvn test` (y verificación de cobertura si JaCoCo ya está configurado).
 - [ ] Sin API keys en el repositorio.
-- [ ] HU 4 cubierta en comportamiento y tests.
+- [x] HU 4 cubierta en comportamiento y tests.

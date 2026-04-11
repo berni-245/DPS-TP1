@@ -3,9 +3,13 @@ package ar.edu.itba.dps.exchange.infrastructure.api;
 import ar.edu.itba.dps.exchange.domain.CurrencyRate;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailable;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
+import ar.edu.itba.dps.exchange.domain.CurrencyRateRemoteException;
+import ar.edu.itba.dps.exchange.domain.CurrencyRateTransportException;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpClient;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpResponse;
+import ar.edu.itba.dps.exchange.infrastructure.http.HttpTransportException;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -36,6 +40,8 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 			"accept", "application/json",
 			"apikey", API_KEY
 	);
+
+	private static final int RESPONSE_DETAIL_MAX_LEN = 256;
 
 	private final HttpClient httpClient;
 	private final String baseUrl;
@@ -70,11 +76,13 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 	}
 
 	@Override
-	public List<CurrencyRate> getHistoricalCurrencyRates(Currency from, List<Currency> to, LocalDate date) {
+	public List<CurrencyRate> getHistoricalCurrencyRates(final Currency from, final List<Currency> to,
+	                                                     final LocalDate date) {
 		final String currencies = to.stream()
 				.map(Currency::getCurrencyCode)
 				.collect(Collectors.joining(","));
-		final HttpResponse response = this.getHistoricalConversionRate(from.getCurrencyCode(), currencies, date.toString());
+		final HttpResponse response = this.getHistoricalConversionRate(from.getCurrencyCode(), currencies,
+				date.toString());
 		final HistoricalExchangeRateResponse rates = this.parseJsonOrUnavailable(response,
 				HistoricalExchangeRateResponse.class);
 		return to.stream()
@@ -88,12 +96,34 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		return LocalTime.of(23, 59, 59);
 	}
 
-	// FIX: The exception is not specific to each endpoint.
 	private <T> T parseJsonOrUnavailable(final HttpResponse response, final Class<T> type) {
 		if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-			throw new CurrencyRateNotAvailable();
+			throw new CurrencyRateRemoteException(response.statusCode(), sanitizeResponseExcerpt(response.body()));
 		}
-		return GSON.fromJson(response.body(), type);
+		try {
+			return GSON.fromJson(response.body(), type);
+		} catch (final JsonSyntaxException e) {
+			throw new CurrencyRateNotAvailable("Could not parse currency service response", e);
+		}
+	}
+
+	static String sanitizeResponseExcerpt(final String body) {
+		if (body == null || body.isBlank()) {
+			return "";
+		}
+		String s = body.strip().replace('\n', ' ').replace('\r', ' ');
+		if (s.length() > RESPONSE_DETAIL_MAX_LEN) {
+			s = s.substring(0, RESPONSE_DETAIL_MAX_LEN) + "…";
+		}
+		return s;
+	}
+
+	private HttpResponse executeGet(final URI url, final Map<String, Object> queryParams) {
+		try {
+			return this.httpClient.get(url, queryParams, JSON_REQUEST_HEADERS);
+		} catch (final HttpTransportException e) {
+			throw new CurrencyRateTransportException("Failed to contact currency service", e);
+		}
 	}
 
 	private URI buildUrl(final String endpoint) {
@@ -101,24 +131,23 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 	}
 
 	private HttpResponse getConversionRates(final String fromCurrency, final String currencies) {
-		return this.httpClient.get(
+		return this.executeGet(
 				this.buildUrl(ENDPOINT_LATEST),
-				Map.of(QUERY_BASE_CURRENCY, fromCurrency, QUERY_CURRENCIES, currencies),
-				JSON_REQUEST_HEADERS);
+				Map.of(QUERY_BASE_CURRENCY, fromCurrency, QUERY_CURRENCIES, currencies));
 	}
 
 	private HttpResponse getCurrencies() {
-		return this.httpClient.get(this.buildUrl(ENDPOINT_CURRENCIES), null, JSON_REQUEST_HEADERS);
+		return this.executeGet(this.buildUrl(ENDPOINT_CURRENCIES), Map.of());
 	}
 
-	private HttpResponse getHistoricalConversionRate(final String fromCurrency, final String currencies, final String date) {
-		return this.httpClient.get(
+	private HttpResponse getHistoricalConversionRate(final String fromCurrency, final String currencies,
+	                                                 final String date) {
+		return this.executeGet(
 				this.buildUrl(ENDPOINT_HISTORICAL),
 				Map.of(
 						QUERY_BASE_CURRENCY, fromCurrency,
 						QUERY_DATE, date,
 						QUERY_CURRENCIES, currencies
-				),
-				JSON_REQUEST_HEADERS);
+				));
 	}
 }
