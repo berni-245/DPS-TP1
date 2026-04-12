@@ -14,10 +14,7 @@ public final class Main {
 
 	private static final Logger LOG = LogManager.getLogger(Main.class);
 
-	private Main() {
-	}
-
-	public static void main(final String[] args) {
+	static void main() {
 		try {
 			final var httpClient = new UnirestHttpClient();
 			final var provider = new FreeCurrencyApiProvider(httpClient);
