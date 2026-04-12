@@ -10,6 +10,8 @@ import ar.edu.itba.dps.exchange.infrastructure.http.HttpResponse;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpTransportException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 
+	private static final Logger LOG = LogManager.getLogger(FreeCurrencyApiProvider.class);
 	private static final Gson GSON = new Gson();
 
 	private static final String API_KEY = "fca_live_JA6vg6L8PJQe85FIp4ohUOdZgUn6LjQ42sS07OAB";
@@ -97,11 +100,15 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 
 	private <T> T parseJsonOrUnavailable(final HttpResponse response, final Class<T> type) {
 		if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-			throw new CurrencyRateRemoteException(response.statusCode(), sanitizeResponseExcerpt(response.body()));
+			final String excerpt = sanitizeResponseExcerpt(response.body());
+			LOG.warn("Currency service returned HTTP {}: {}", response.statusCode(), excerpt);
+			throw new CurrencyRateRemoteException(response.statusCode(), excerpt);
 		}
 		try {
 			return GSON.fromJson(response.body(), type);
 		} catch (final JsonSyntaxException e) {
+			final String excerpt = sanitizeResponseExcerpt(response.body());
+			LOG.warn("Currency service response is not valid JSON: {}", excerpt, e);
 			throw new CurrencyRateNotAvailable("Could not parse currency service response", e);
 		}
 	}

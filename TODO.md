@@ -46,7 +46,7 @@ Prioridad: **código limpio** y separación negocio / infraestructura, como pide
 
 - [x] Eliminar o resolver comentarios `TODO` / `FIX` en `FreeCurrencyApiProvider` y equivalentes.
 - [x] Sustituir `System.err` en el cliente HTTP por **logging** (el proyecto ya declara Log4j).
-- [ ] Mensajes de error y logs: informativos para el usuario/desarrollador sin filtrar secretos.
+- [x] Mensajes de error y logs: informativos para el usuario/desarrollador sin filtrar secretos.
 
 ---
 
