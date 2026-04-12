@@ -33,6 +33,8 @@ class CurrencyConverterTest {
 		final var result = converter.convert(ARS, USD, 100);
 
 		// Then
+		assertThat(result.fromCurrency(), is(ARS));
+		assertThat(result.toCurrency(), is(USD));
 		assertThat(result.convertedAmount(), is(100.0));
 		assertThat(result.rate(), is(1.0));
 		assertThat(result.timestamp(), is(fixedInstant));
@@ -54,6 +56,10 @@ class CurrencyConverterTest {
 
 		// Then
 		assertThat(results, hasSize(2));
+		assertThat(results.get(0).fromCurrency(), is(ARS));
+		assertThat(results.get(1).fromCurrency(), is(ARS));
+		assertThat(results.get(0).toCurrency(), is(USD));
+		assertThat(results.get(1).toCurrency(), is(EUR));
 		assertThat(results.get(0).convertedAmount(), is(100.0));
 		assertThat(results.get(1).convertedAmount(), is(120.0));
 		assertThat(results.get(0).rate(), is(1.0));
@@ -75,6 +81,8 @@ class CurrencyConverterTest {
 		final var result = converter.getCurrencyRate(ARS, USD);
 
 		// Then
+		assertThat(result.fromCurrency(), is(ARS));
+		assertThat(result.toCurrency(), is(USD));
 		assertThat(result.rate(), is(1.0));
 		assertThat(result.timestamp(), is(fixedInstant));
 	}
@@ -112,6 +120,10 @@ class CurrencyConverterTest {
 		// Then
 		final var expectedTimestamp = date.atTime(measurementTime).toInstant(ZoneOffset.UTC);
 		assertThat(results, hasSize(2));
+		assertThat(results.get(0).fromCurrency(), is(ARS));
+		assertThat(results.get(1).fromCurrency(), is(ARS));
+		assertThat(results.get(0).toCurrency(), is(USD));
+		assertThat(results.get(1).toCurrency(), is(EUR));
 		assertThat(results.get(0).convertedAmount(), is(100.0));
 		assertThat(results.get(1).convertedAmount(), closeTo(85.0, 1e-9));
 		assertThat(results.get(0).rate(), is(1.0));
