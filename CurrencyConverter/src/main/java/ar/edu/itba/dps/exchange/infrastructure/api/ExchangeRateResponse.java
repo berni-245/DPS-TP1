@@ -1,14 +1,15 @@
 package ar.edu.itba.dps.exchange.infrastructure.api;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
-record ExchangeRateResponse(Map<String, Double> data) {
+record ExchangeRateResponse(Map<String, BigDecimal> data) {
 
-	double getExchange(String toCurrency) {
+	BigDecimal getExchange(String toCurrency) {
 		if (this.data == null) {
 			throw new IllegalStateException("Missing exchange data");
 		}
-		final Double rate = this.data.get(toCurrency);
+		final BigDecimal rate = this.data.get(toCurrency);
 		if (rate == null) {
 			throw new IllegalStateException("Missing exchange rate for currency: " + toCurrency);
 		}

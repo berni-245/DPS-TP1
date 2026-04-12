@@ -2,6 +2,7 @@ package ar.edu.itba.dps.exchange.infrastructure.api;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,7 +30,7 @@ class HistoricalExchangeRateResponseTest {
 	@Test
 	void getExchange_whenCurrencyMissing_throws() {
 		final var r = new HistoricalExchangeRateResponse(
-				Map.of("2022-01-01", Map.of("EUR", 1.0)));
+				Map.of("2022-01-01", Map.of("EUR", BigDecimal.ONE)));
 		final var ex = assertThrows(IllegalStateException.class,
 				() -> r.getExchange("2022-01-01", "USD"));
 		assertThat(ex.getMessage(), containsString("USD"));

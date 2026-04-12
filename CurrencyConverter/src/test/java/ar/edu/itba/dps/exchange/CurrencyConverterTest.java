@@ -6,6 +6,7 @@ import ar.edu.itba.dps.exchange.domain.CurrencyRate;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.Currency;
 import java.util.List;
@@ -35,10 +36,10 @@ class CurrencyConverterTest {
 
 		// Then
 		assertThat(result.source().currency(), is(ARS));
-		assertThat(result.source().amount(), is(100.0));
+		assertThat(result.source().amount(), comparesEqualTo(BigDecimal.valueOf(100.0)));
 		assertThat(result.target().currency(), is(USD));
-		assertThat(result.target().amount(), is(100.0));
-		assertThat(result.rate(), is(1.0));
+		assertThat(result.target().amount(), comparesEqualTo(BigDecimal.valueOf(100.0)));
+		assertThat(result.rate(), comparesEqualTo(BigDecimal.valueOf(1.0)));
 		assertThat(result.timestamp(), is(fixedInstant));
 	}
 
@@ -60,14 +61,14 @@ class CurrencyConverterTest {
 		assertThat(results, hasSize(2));
 		assertThat(results.get(0).source().currency(), is(ARS));
 		assertThat(results.get(1).source().currency(), is(ARS));
-		assertThat(results.get(0).source().amount(), is(100.0));
-		assertThat(results.get(1).source().amount(), is(100.0));
+		assertThat(results.get(0).source().amount(), comparesEqualTo(BigDecimal.valueOf(100.0)));
+		assertThat(results.get(1).source().amount(), comparesEqualTo(BigDecimal.valueOf(100.0)));
 		assertThat(results.get(0).target().currency(), is(USD));
 		assertThat(results.get(1).target().currency(), is(EUR));
-		assertThat(results.get(0).target().amount(), is(100.0));
-		assertThat(results.get(1).target().amount(), is(120.0));
-		assertThat(results.get(0).rate(), is(1.0));
-		assertThat(results.get(1).rate(), is(1.2));
+		assertThat(results.get(0).target().amount(), comparesEqualTo(BigDecimal.valueOf(100.0)));
+		assertThat(results.get(1).target().amount(), comparesEqualTo(BigDecimal.valueOf(120.0)));
+		assertThat(results.get(0).rate(), comparesEqualTo(BigDecimal.valueOf(1.0)));
+		assertThat(results.get(1).rate(), comparesEqualTo(BigDecimal.valueOf(1.2)));
 		assertThat(results.get(0).timestamp(), is(fixedInstant));
 		assertThat(results.get(1).timestamp(), is(fixedInstant));
 	}
@@ -87,7 +88,7 @@ class CurrencyConverterTest {
 		// Then
 		assertThat(result.fromCurrency(), is(ARS));
 		assertThat(result.toCurrency(), is(USD));
-		assertThat(result.rate(), is(1.0));
+		assertThat(result.rate(), comparesEqualTo(BigDecimal.valueOf(1.0)));
 		assertThat(result.timestamp(), is(fixedInstant));
 	}
 
@@ -126,14 +127,14 @@ class CurrencyConverterTest {
 		assertThat(results, hasSize(2));
 		assertThat(results.get(0).source().currency(), is(ARS));
 		assertThat(results.get(1).source().currency(), is(ARS));
-		assertThat(results.get(0).source().amount(), is(100.0));
-		assertThat(results.get(1).source().amount(), is(100.0));
+		assertThat(results.get(0).source().amount(), comparesEqualTo(BigDecimal.valueOf(100.0)));
+		assertThat(results.get(1).source().amount(), comparesEqualTo(BigDecimal.valueOf(100.0)));
 		assertThat(results.get(0).target().currency(), is(USD));
 		assertThat(results.get(1).target().currency(), is(EUR));
-		assertThat(results.get(0).target().amount(), is(100.0));
-		assertThat(results.get(1).target().amount(), closeTo(85.0, 1e-9));
-		assertThat(results.get(0).rate(), is(1.0));
-		assertThat(results.get(1).rate(), is(0.85));
+		assertThat(results.get(0).target().amount(), comparesEqualTo(BigDecimal.valueOf(100.0)));
+		assertThat(results.get(1).target().amount(), comparesEqualTo(BigDecimal.valueOf(85.0)));
+		assertThat(results.get(0).rate(), comparesEqualTo(BigDecimal.valueOf(1.0)));
+		assertThat(results.get(1).rate(), comparesEqualTo(BigDecimal.valueOf(0.85)));
 		assertThat(results.get(0).timestamp(), is(expectedTimestamp));
 		assertThat(results.get(1).timestamp(), is(expectedTimestamp));
 	}

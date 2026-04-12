@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.List;
@@ -44,7 +45,7 @@ class FreeCurrencyApiProviderIT {
 
 		final var rate = provider.getHistoricalCurrencyRates(eur, List.of(usd), date).getFirst();
 
-		Assertions.assertEquals(1.1347, rate.rate(), 1e-9);
+		Assertions.assertEquals(BigDecimal.valueOf(1.1347), rate.rate());
 	}
 
 	@Test
@@ -62,8 +63,8 @@ class FreeCurrencyApiProviderIT {
 
 		// Then
 		Assertions.assertEquals(2, rates.size());
-		Assertions.assertEquals(1.1347, rates.get(0).rate(), 1e-9);
-		Assertions.assertEquals(1.5623, rates.get(1).rate(), 1e-9);
+		Assertions.assertEquals(BigDecimal.valueOf(1.1347), rates.get(0).rate());
+		Assertions.assertEquals(BigDecimal.valueOf(1.5623), rates.get(1).rate());
 	}
 
 	@Test
@@ -78,7 +79,7 @@ class FreeCurrencyApiProviderIT {
 		final var rate = provider.getCurrencyRates(eur, List.of(usd)).getFirst();
 
 		// Then
-		Assertions.assertEquals(1.0847, rate.rate(), 1e-9);
+		Assertions.assertEquals(BigDecimal.valueOf(1.0847), rate.rate());
 	}
 
 	@Test
@@ -95,7 +96,7 @@ class FreeCurrencyApiProviderIT {
 
 		// Then
 		Assertions.assertEquals(2, rates.size());
-		Assertions.assertEquals(1.0847, rates.get(0).rate(), 1e-9);
-		Assertions.assertEquals(1.4823, rates.get(1).rate(), 1e-9);
+		Assertions.assertEquals(BigDecimal.valueOf(1.0847), rates.get(0).rate());
+		Assertions.assertEquals(BigDecimal.valueOf(1.4823), rates.get(1).rate());
 	}
 }

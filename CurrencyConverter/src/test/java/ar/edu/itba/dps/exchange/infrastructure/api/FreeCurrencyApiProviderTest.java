@@ -8,6 +8,7 @@ import ar.edu.itba.dps.exchange.infrastructure.http.HttpResponse;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpTransportException;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -149,6 +150,6 @@ class FreeCurrencyApiProviderTest {
 
 		final var rate = provider.getCurrencyRates(EUR, List.of(USD)).getFirst();
 
-		assertThat(rate.rate(), closeTo(1.08, 1e-9));
+		assertThat(rate.rate(), comparesEqualTo(BigDecimal.valueOf(1.08)));
 	}
 }

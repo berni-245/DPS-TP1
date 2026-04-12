@@ -1,18 +1,19 @@
 package ar.edu.itba.dps.exchange.infrastructure.api;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
-record HistoricalExchangeRateResponse(Map<String, Map<String, Double>> data) {
+record HistoricalExchangeRateResponse(Map<String, Map<String, BigDecimal>> data) {
 
-	double getExchange(String dateIso, String toCurrency) {
+	BigDecimal getExchange(String dateIso, String toCurrency) {
 		if (this.data == null) {
 			throw new IllegalStateException("Missing exchange data");
 		}
-		final Map<String, Double> dayRates = this.data.get(dateIso);
+		final Map<String, BigDecimal> dayRates = this.data.get(dateIso);
 		if (dayRates == null) {
 			throw new IllegalStateException("Missing rates for date: " + dateIso);
 		}
-		final Double rate = dayRates.get(toCurrency);
+		final BigDecimal rate = dayRates.get(toCurrency);
 		if (rate == null) {
 			throw new IllegalStateException("Missing exchange rate for currency: " + toCurrency);
 		}

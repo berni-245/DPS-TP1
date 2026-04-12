@@ -25,17 +25,17 @@ public class CurrencyConverter {
 		final var timestamp = Instant.now(clock);
 		return IntStream.range(0, to.size())
 				.mapToObj(i -> {
-					final double r = currencyRates.get(i).rate();
+					final var r = currencyRates.get(i).rate();
 					return new CurrencyConversionResponse(
 							money,
-							new Money(to.get(i), money.amount() * r),
+							new Money(to.get(i), money.amount().multiply(r)),
 							r,
 							timestamp);
 				})
 				.toList();
 	}
 
-	public CurrencyRateQuote getCurrencyRate(Currency from, Currency to) {
+	public CurrencyRateQuote getCurrencyRate(final Currency from, final Currency to) {
 		final var currencyRates = this.currencyRateProvider.getCurrencyRates(from, List.of(to));
 		final var currencyRate = currencyRates.getFirst();
 		return new CurrencyRateQuote(from, to, currencyRate.rate(), Instant.now(clock));
@@ -50,10 +50,10 @@ public class CurrencyConverter {
 		final var timestamp = date.atTime(this.currencyRateProvider.getDailyTimeOfRateMeasurement()).toInstant(ZoneOffset.UTC);
 		return IntStream.range(0, to.size())
 				.mapToObj(i -> {
-					final double r = currencyRates.get(i).rate();
+					final var r = currencyRates.get(i).rate();
 					return new CurrencyConversionResponse(
 							money,
-							new Money(to.get(i), money.amount() * r),
+							new Money(to.get(i), money.amount().multiply(r)),
 							r,
 							timestamp);
 				})
