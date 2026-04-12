@@ -16,17 +16,21 @@ public class CurrencyConverter {
 	private final CurrencyRateProvider currencyRateProvider;
 	private final Clock clock;
 
-	public CurrencyConversionResponse convert(Currency from, Currency to, double amount) {
-		return convert(from, List.of(to), amount).getFirst();
+	public CurrencyConversionResponse convert(final Money money, final Currency to) {
+		return convert(money, List.of(to)).getFirst();
 	}
 
-	public List<CurrencyConversionResponse> convert(Currency from, List<Currency> to, double amount) {
-		final var currencyRates = this.currencyRateProvider.getCurrencyRates(from, to);
+	public List<CurrencyConversionResponse> convert(final Money money, final List<Currency> to) {
+		final var currencyRates = this.currencyRateProvider.getCurrencyRates(money.currency(), to);
 		final var timestamp = Instant.now(clock);
 		return IntStream.range(0, to.size())
 				.mapToObj(i -> {
 					final double r = currencyRates.get(i).rate();
-					return new CurrencyConversionResponse(from, to.get(i), amount * r, r, timestamp);
+					return new CurrencyConversionResponse(
+							money,
+							new Money(to.get(i), money.amount() * r),
+							r,
+							timestamp);
 				})
 				.toList();
 	}
@@ -41,13 +45,17 @@ public class CurrencyConverter {
 		return this.currencyRateProvider.getAvailableCurrencies();
 	}
 
-	public List<CurrencyConversionResponse> convert(Currency from, List<Currency> to, double amount, LocalDate date) {
-		final var currencyRates = this.currencyRateProvider.getHistoricalCurrencyRates(from, to, date);
+	public List<CurrencyConversionResponse> convert(final Money money, final List<Currency> to, final LocalDate date) {
+		final var currencyRates = this.currencyRateProvider.getHistoricalCurrencyRates(money.currency(), to, date);
 		final var timestamp = date.atTime(this.currencyRateProvider.getDailyTimeOfRateMeasurement()).toInstant(ZoneOffset.UTC);
 		return IntStream.range(0, to.size())
 				.mapToObj(i -> {
 					final double r = currencyRates.get(i).rate();
-					return new CurrencyConversionResponse(from, to.get(i), amount * r, r, timestamp);
+					return new CurrencyConversionResponse(
+							money,
+							new Money(to.get(i), money.amount() * r),
+							r,
+							timestamp);
 				})
 				.toList();
 	}
