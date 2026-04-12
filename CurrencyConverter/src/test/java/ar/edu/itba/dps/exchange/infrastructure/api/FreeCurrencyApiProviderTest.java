@@ -1,5 +1,6 @@
 package ar.edu.itba.dps.exchange.infrastructure.api;
 
+import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailable;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateRemoteException;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateTransportException;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpClient;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +19,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class FreeCurrencyApiProviderTest {
@@ -75,6 +79,59 @@ class FreeCurrencyApiProviderTest {
 		final String excerpt = FreeCurrencyApiProvider.sanitizeResponseExcerpt(longBody);
 		assertThat(excerpt.length(), lessThanOrEqualTo(258));
 		assertThat(excerpt, endsWith("…"));
+	}
+
+	@Test
+	void singleArgConstructor_usesDefaultBaseUrl() {
+		final var http = mock(HttpClient.class);
+		when(http.get(any(URI.class), any(), any())).thenReturn(
+				new HttpResponse("{\"data\":{\"USD\":1.08}}", 200));
+		final var provider = new FreeCurrencyApiProvider(http);
+
+		provider.getCurrencyRates(EUR, List.of(USD));
+
+		verify(http).get(
+				argThat(uri -> uri.toString().startsWith("https://api.freecurrencyapi.com/v1/")),
+				eq(Map.of("base_currency", "EUR", "currencies", "USD")),
+				any());
+	}
+
+	@Test
+	void baseUrlWithoutTrailingSlash_isNormalized() {
+		final var http = mock(HttpClient.class);
+		when(http.get(any(URI.class), any(), any())).thenReturn(
+				new HttpResponse("{\"data\":{\"USD\":1}}", 200));
+		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1");
+
+		provider.getCurrencyRates(EUR, List.of(USD));
+
+		verify(http).get(
+				argThat(uri -> uri.toString().startsWith("https://example.com/v1/")),
+				any(),
+				any());
+	}
+
+	@Test
+	void invalidJson200_throwsNotAvailable() {
+		final var http = mock(HttpClient.class);
+		when(http.get(any(URI.class), any(), any())).thenReturn(new HttpResponse("not-json", 200));
+		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
+
+		assertThrows(CurrencyRateNotAvailable.class,
+				() -> provider.getCurrencyRates(EUR, List.of(USD)));
+	}
+
+	@Test
+	void getDailyTimeOfRateMeasurement_isEndOfServiceDay() {
+		final var http = mock(HttpClient.class);
+		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
+
+		assertThat(provider.getDailyTimeOfRateMeasurement(), is(LocalTime.of(23, 59, 59)));
+	}
+
+	@Test
+	void sanitizeResponseExcerpt_blankBody_returnsEmpty() {
+		assertThat(FreeCurrencyApiProvider.sanitizeResponseExcerpt("   \n"), is(""));
 	}
 
 	@Test

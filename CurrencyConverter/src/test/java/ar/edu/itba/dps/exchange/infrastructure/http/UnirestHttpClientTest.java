@@ -39,6 +39,19 @@ class UnirestHttpClientTest {
 	}
 
 	@Test
+	void nullQueryParams_defaultsToEmptyMap() {
+		wireMock.stubFor(get(urlPathEqualTo("/q"))
+				.willReturn(aResponse().withStatus(200).withBody("ok")));
+
+		final var client = new UnirestHttpClient();
+		final var uri = URI.create(wireMock.baseUrl() + "/q");
+		final var response = client.get(uri, null, Map.of());
+
+		assertThat(response.statusCode(), is(200));
+		assertThat(response.body(), is("ok"));
+	}
+
+	@Test
 	void returnsRealStatusFor500() {
 		wireMock.stubFor(get(urlPathEqualTo("/fail"))
 				.willReturn(aResponse().withStatus(500).withBody("boom")));

@@ -24,6 +24,7 @@
         <wiremock-jetty12.version>3.10.0</wiremock-jetty12.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <jacoco.version>0.8.13</jacoco.version>
     </properties>
 
     <repositories>
@@ -116,8 +117,13 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <argLine>-Dnet.bytebuddy.experimental=true</argLine>
+                        <argLine>@{argLine} -Dnet.bytebuddy.experimental=true</argLine>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
