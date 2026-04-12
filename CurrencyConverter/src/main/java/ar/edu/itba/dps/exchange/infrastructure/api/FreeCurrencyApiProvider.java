@@ -1,7 +1,7 @@
 package ar.edu.itba.dps.exchange.infrastructure.api;
 
 import ar.edu.itba.dps.exchange.domain.CurrencyRate;
-import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailable;
+import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailableException;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateRemoteException;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateTransportException;
@@ -109,7 +109,7 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		} catch (final JsonSyntaxException e) {
 			final String excerpt = sanitizeResponseExcerpt(response.body());
 			LOG.warn("Currency service response is not valid JSON: {}", excerpt, e);
-			throw new CurrencyRateNotAvailable("Could not parse currency service response", e);
+			throw new CurrencyRateNotAvailableException("Could not parse currency service response", e);
 		}
 	}
 

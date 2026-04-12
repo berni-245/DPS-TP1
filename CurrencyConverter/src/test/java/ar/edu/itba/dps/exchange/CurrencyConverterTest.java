@@ -26,13 +26,13 @@ class CurrencyConverterTest {
 	void testConvert() {
 		// Given
 		final var provider = mock(CurrencyRateProvider.class);
-		when(provider.getCurrencyRates(ARS, List.of(USD))).thenReturn(List.of(new CurrencyRate(1)));
+		when(provider.getCurrencyRates(ARS, List.of(USD))).thenReturn(List.of(new CurrencyRate(BigDecimal.ONE)));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
 
 		// When
-		final var result = converter.convert(new Money(ARS, 100), USD);
+		final var result = converter.convert(new Money(ARS, BigDecimal.valueOf(100)), USD);
 
 		// Then
 		assertThat(result.source().currency(), is(ARS));
@@ -49,13 +49,13 @@ class CurrencyConverterTest {
 		final var provider = mock(CurrencyRateProvider.class);
 		final var targets = List.of(USD, EUR);
 		when(provider.getCurrencyRates(ARS, targets))
-				.thenReturn(List.of(new CurrencyRate(1), new CurrencyRate(1.2)));
+				.thenReturn(List.of(new CurrencyRate(BigDecimal.ONE), new CurrencyRate(BigDecimal.valueOf(1.2))));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
 
 		// When
-		final var results = converter.convert(new Money(ARS, 100), targets);
+		final var results = converter.convert(new Money(ARS, BigDecimal.valueOf(100)), targets);
 
 		// Then
 		assertThat(results, hasSize(2));
@@ -77,7 +77,7 @@ class CurrencyConverterTest {
 	void testGetExchangeRate() {
 		// Given
 		final var provider = mock(CurrencyRateProvider.class);
-		when(provider.getCurrencyRates(ARS, List.of(USD))).thenReturn(List.of(new CurrencyRate(1)));
+		when(provider.getCurrencyRates(ARS, List.of(USD))).thenReturn(List.of(new CurrencyRate(BigDecimal.ONE)));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
@@ -115,12 +115,12 @@ class CurrencyConverterTest {
 		final var date = LocalDate.of(2022, 1, 1);
 		final var measurementTime = LocalTime.of(23, 59, 59);
 		when(provider.getHistoricalCurrencyRates(ARS, targets, date))
-				.thenReturn(List.of(new CurrencyRate(1.0), new CurrencyRate(0.85)));
+				.thenReturn(List.of(new CurrencyRate(BigDecimal.ONE), new CurrencyRate(BigDecimal.valueOf(0.85))));
 		when(provider.getDailyTimeOfRateMeasurement()).thenReturn(measurementTime);
 		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
 
 		// When
-		final var results = converter.convert(new Money(ARS, 100), targets, date);
+		final var results = converter.convert(new Money(ARS, BigDecimal.valueOf(100)), targets, date);
 
 		// Then
 		final var expectedTimestamp = date.atTime(measurementTime).toInstant(ZoneOffset.UTC);

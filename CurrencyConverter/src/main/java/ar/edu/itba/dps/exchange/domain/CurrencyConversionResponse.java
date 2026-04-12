@@ -9,8 +9,4 @@ public record CurrencyConversionResponse(
 		BigDecimal rate,
 		Instant timestamp
 ) {
-	public CurrencyConversionResponse(final Money source, final Money target, final double rate,
-	                                  final Instant timestamp) {
-		this(source, target, BigDecimal.valueOf(rate), timestamp);
-	}
 }

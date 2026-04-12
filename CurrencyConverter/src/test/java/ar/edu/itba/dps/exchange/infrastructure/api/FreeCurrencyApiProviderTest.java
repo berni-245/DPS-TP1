@@ -1,6 +1,6 @@
 package ar.edu.itba.dps.exchange.infrastructure.api;
 
-import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailable;
+import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailableException;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateRemoteException;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateTransportException;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpClient;
@@ -118,7 +118,7 @@ class FreeCurrencyApiProviderTest {
 		when(http.get(any(URI.class), any(), any())).thenReturn(new HttpResponse("not-json", 200));
 		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
 
-		assertThrows(CurrencyRateNotAvailable.class,
+		assertThrows(CurrencyRateNotAvailableException.class,
 				() -> provider.getCurrencyRates(EUR, List.of(USD)));
 	}
 
