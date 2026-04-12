@@ -135,6 +135,11 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
+	void sanitizeResponseExcerpt_nullBody_returnsEmpty() {
+		assertThat(FreeCurrencyApiProvider.sanitizeResponseExcerpt(null), is(""));
+	}
+
+	@Test
 	void latest_ok_usesCorrectQueryParams() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), eq(Map.of("base_currency", "EUR", "currencies", "USD")), any()))
