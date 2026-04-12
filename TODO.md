@@ -7,15 +7,15 @@ Prioridad: **código limpio** y separación negocio / infraestructura, como pide
 
 ## Estado frente a las historias de usuario
 
-| #   | Historia                                        | Estado                                                                       | Acción si falta algo                                        |
-| --- | ----------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| 1   | Listar monedas soportadas                       | Hecho                                                                        | —                                                           |
-| 2   | Timestamp en la respuesta de conversión         | Hecho (`Instant.now(clock)` en cotizaciones latest; fecha+hora en histórico) | —                                                           |
-| 3   | Solo cotización entre dos monedas (sin monto)   | Hecho (`getCurrencyRate` → `CurrencyRateQuote`)                              | —                                                           |
-| 4   | Errores de conexión/API claros (404, 500, etc.) | Hecho (`CurrencyRateRemoteException`, `CurrencyRateTransportException`, tests) | —                                                           |
-| 5   | Un monto a varias monedas                       | Hecho                                                                        | —                                                           |
-| 6   | Histórico por fecha y varias monedas            | Hecho                                                                        | —                                                           |
-| 7   | Cotización usada por moneda en la respuesta     | Hecho (`rate` en cada ítem)                                                  | —                                                           |
+| #   | Historia                                        | Estado                                                                         | Acción si falta algo |
+| --- | ----------------------------------------------- | ------------------------------------------------------------------------------ | -------------------- |
+| 1   | Listar monedas soportadas                       | Hecho                                                                          | —                    |
+| 2   | Timestamp en la respuesta de conversión         | Hecho (`Instant.now(clock)` en cotizaciones latest; fecha+hora en histórico)   | —                    |
+| 3   | Solo cotización entre dos monedas (sin monto)   | Hecho (`getCurrencyRate` → `CurrencyRateQuote`)                                | —                    |
+| 4   | Errores de conexión/API claros (404, 500, etc.) | Hecho (`CurrencyRateRemoteException`, `CurrencyRateTransportException`, tests) | —                    |
+| 5   | Un monto a varias monedas                       | Hecho                                                                          | —                    |
+| 6   | Histórico por fecha y varias monedas            | Hecho                                                                          | —                    |
+| 7   | Cotización usada por moneda en la respuesta     | Hecho (`rate` en cada ítem)                                                    | —                    |
 
 ---
 
@@ -44,8 +44,8 @@ Prioridad: **código limpio** y separación negocio / infraestructura, como pide
 
 ## Código limpio y seguridad
 
-- [ ] Eliminar o resolver comentarios `TODO` / `FIX` en `FreeCurrencyApiProvider` y equivalentes.
-- [ ] Sustituir `System.err` en el cliente HTTP por **logging** (el proyecto ya declara Log4j).
+- [x] Eliminar o resolver comentarios `TODO` / `FIX` en `FreeCurrencyApiProvider` y equivalentes.
+- [x] Sustituir `System.err` en el cliente HTTP por **logging** (el proyecto ya declara Log4j).
 - [ ] Mensajes de error y logs: informativos para el usuario/desarrollador sin filtrar secretos.
 
 ---
@@ -67,5 +67,4 @@ Prioridad: **código limpio** y separación negocio / infraestructura, como pide
 ## Checklist rápido antes de entregar
 
 - [ ] `mvn test` (y verificación de cobertura si JaCoCo ya está configurado).
-- [ ] Sin API keys en el repositorio.
 - [x] HU 4 cubierta en comportamiento y tests.

@@ -24,7 +24,6 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 
 	private static final Gson GSON = new Gson();
 
-	// TODO move this to a private file prolly
 	private static final String API_KEY = "fca_live_JA6vg6L8PJQe85FIp4ohUOdZgUn6LjQ42sS07OAB";
 	private static final String DEFAULT_BASE_URL = "https://api.freecurrencyapi.com/v1/";
 
