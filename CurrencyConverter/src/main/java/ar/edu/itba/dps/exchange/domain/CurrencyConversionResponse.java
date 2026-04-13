@@ -4,8 +4,15 @@ import java.time.Instant;
 
 public record CurrencyConversionResponse(
 		Money source,
-		Money target,
-		CurrencyRate rate,
+		TargetCurrencyRate targetRate,
 		Instant timestamp
 ) {
+
+	public Money target() {
+		return this.source.convertedTo(this.targetRate);
+	}
+
+	public CurrencyRate rate() {
+		return this.targetRate.currencyRate();
+	}
 }
