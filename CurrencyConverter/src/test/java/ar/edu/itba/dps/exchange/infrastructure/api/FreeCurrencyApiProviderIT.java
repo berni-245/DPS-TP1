@@ -15,6 +15,10 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 
 class FreeCurrencyApiProviderIT {
 
+	private static final Currency EUR = Currency.getInstance("EUR");
+	private static final Currency USD = Currency.getInstance("USD");
+	private static final Currency CAD = Currency.getInstance("CAD");
+
 	@RegisterExtension
 	static WireMockExtension wireMock = WireMockExtension.newInstance()
 			.options(options().dynamicPort().usingFilesUnderClasspath("wiremock"))
@@ -31,19 +35,17 @@ class FreeCurrencyApiProviderIT {
 
 		// Then
 		Assertions.assertEquals(2, currencies.size());
-		Assertions.assertTrue(currencies.contains(Currency.getInstance("USD")));
-		Assertions.assertTrue(currencies.contains(Currency.getInstance("EUR")));
+		Assertions.assertTrue(currencies.contains(USD));
+		Assertions.assertTrue(currencies.contains(EUR));
 	}
 
 	@Test
 	void testGetHistoricalCurrencyRate() {
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
-		final var eur = Currency.getInstance("EUR");
-		final var usd = Currency.getInstance("USD");
 		final var date = LocalDate.of(2022, 1, 1);
 
-		final var rate = provider.getHistoricalCurrencyRates(eur, List.of(usd), date).getFirst();
+		final var rate = provider.getHistoricalCurrencyRates(EUR, List.of(USD), date).getFirst();
 
 		Assertions.assertEquals(BigDecimal.valueOf(1.1347), rate.rate());
 	}
@@ -53,13 +55,10 @@ class FreeCurrencyApiProviderIT {
 		// Given
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
-		final var eur = Currency.getInstance("EUR");
-		final var usd = Currency.getInstance("USD");
-		final var cad = Currency.getInstance("CAD");
 		final var date = LocalDate.of(2022, 1, 1);
 
 		// When
-		final var rates = provider.getHistoricalCurrencyRates(eur, List.of(usd, cad), date);
+		final var rates = provider.getHistoricalCurrencyRates(EUR, List.of(USD, CAD), date);
 
 		// Then
 		Assertions.assertEquals(2, rates.size());
@@ -72,11 +71,8 @@ class FreeCurrencyApiProviderIT {
 		// Given
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
-		final var eur = Currency.getInstance("EUR");
-		final var usd = Currency.getInstance("USD");
-
 		// When
-		final var rate = provider.getCurrencyRates(eur, List.of(usd)).getFirst();
+		final var rate = provider.getCurrencyRates(EUR, List.of(USD)).getFirst();
 
 		// Then
 		Assertions.assertEquals(BigDecimal.valueOf(1.0847), rate.rate());
@@ -87,12 +83,8 @@ class FreeCurrencyApiProviderIT {
 		// Given
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
-		final var eur = Currency.getInstance("EUR");
-		final var usd = Currency.getInstance("USD");
-		final var cad = Currency.getInstance("CAD");
-
 		// When
-		final var rates = provider.getCurrencyRates(eur, List.of(usd, cad));
+		final var rates = provider.getCurrencyRates(EUR, List.of(USD, CAD));
 
 		// Then
 		Assertions.assertEquals(2, rates.size());
