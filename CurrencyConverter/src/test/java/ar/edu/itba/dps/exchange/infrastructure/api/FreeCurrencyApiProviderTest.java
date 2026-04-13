@@ -148,9 +148,9 @@ class FreeCurrencyApiProviderTest {
 						"{\"data\":{\"USD\":1.08}}", 200));
 		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
 
-		final var quote = provider.getCurrencyRates(EUR, List.of(USD)).getFirst();
+		final var targetRate = provider.getCurrencyRates(EUR, List.of(USD)).getFirst();
 
-		assertThat(quote.target(), is(USD));
-		assertThat(quote.quotedRate().rate(), comparesEqualTo(BigDecimal.valueOf(1.08)));
+		assertThat(targetRate.target(), is(USD));
+		assertThat(targetRate.currencyRate().rate(), comparesEqualTo(BigDecimal.valueOf(1.08)));
 	}
 }

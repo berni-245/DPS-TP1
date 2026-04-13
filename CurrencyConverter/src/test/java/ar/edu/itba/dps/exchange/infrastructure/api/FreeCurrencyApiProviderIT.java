@@ -45,11 +45,10 @@ class FreeCurrencyApiProviderIT {
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
 		final var date = LocalDate.of(2022, 1, 1);
 
-		final var rate = provider.getHistoricalCurrencyRates(EUR, List.of(USD), date).getFirst();
-		final var quote = provider.getHistoricalCurrencyRates(eur, List.of(usd), date).getFirst();
+		final var targetRate = provider.getHistoricalCurrencyRates(EUR, List.of(USD), date).getFirst();
 
-		Assertions.assertEquals(usd, quote.target());
-		Assertions.assertEquals(BigDecimal.valueOf(1.1347), quote.quotedRate().rate());
+		Assertions.assertEquals(USD, targetRate.target());
+		Assertions.assertEquals(BigDecimal.valueOf(1.1347), targetRate.currencyRate().rate());
 	}
 
 	@Test
@@ -64,10 +63,10 @@ class FreeCurrencyApiProviderIT {
 
 		// Then
 		Assertions.assertEquals(2, rates.size());
-		Assertions.assertEquals(usd, rates.get(0).target());
-		Assertions.assertEquals(cad, rates.get(1).target());
-		Assertions.assertEquals(BigDecimal.valueOf(1.1347), rates.get(0).quotedRate().rate());
-		Assertions.assertEquals(BigDecimal.valueOf(1.5623), rates.get(1).quotedRate().rate());
+		Assertions.assertEquals(USD, rates.get(0).target());
+		Assertions.assertEquals(CAD, rates.get(1).target());
+		Assertions.assertEquals(BigDecimal.valueOf(1.1347), rates.get(0).currencyRate().rate());
+		Assertions.assertEquals(BigDecimal.valueOf(1.5623), rates.get(1).currencyRate().rate());
 	}
 
 	@Test
@@ -76,12 +75,11 @@ class FreeCurrencyApiProviderIT {
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
 		// When
-		final var rate = provider.getCurrencyRates(EUR, List.of(USD)).getFirst();
-		final var quote = provider.getCurrencyRates(eur, List.of(usd)).getFirst();
+		final var targetRate = provider.getCurrencyRates(EUR, List.of(USD)).getFirst();
 
 		// Then
-		Assertions.assertEquals(usd, quote.target());
-		Assertions.assertEquals(BigDecimal.valueOf(1.0847), quote.quotedRate().rate());
+		Assertions.assertEquals(USD, targetRate.target());
+		Assertions.assertEquals(BigDecimal.valueOf(1.0847), targetRate.currencyRate().rate());
 	}
 
 	@Test
@@ -94,9 +92,9 @@ class FreeCurrencyApiProviderIT {
 
 		// Then
 		Assertions.assertEquals(2, rates.size());
-		Assertions.assertEquals(usd, rates.get(0).target());
-		Assertions.assertEquals(cad, rates.get(1).target());
-		Assertions.assertEquals(BigDecimal.valueOf(1.0847), rates.get(0).quotedRate().rate());
-		Assertions.assertEquals(BigDecimal.valueOf(1.4823), rates.get(1).quotedRate().rate());
+		Assertions.assertEquals(USD, rates.get(0).target());
+		Assertions.assertEquals(CAD, rates.get(1).target());
+		Assertions.assertEquals(BigDecimal.valueOf(1.0847), rates.get(0).currencyRate().rate());
+		Assertions.assertEquals(BigDecimal.valueOf(1.4823), rates.get(1).currencyRate().rate());
 	}
 }

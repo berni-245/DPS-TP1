@@ -11,7 +11,7 @@ Prioridad: **código limpio** y separación negocio / infraestructura, como pide
 | --- | ----------------------------------------------- | ------------------------------------------------------------------------------ | -------------------- |
 | 1   | Listar monedas soportadas                       | Hecho                                                                          | —                    |
 | 2   | Timestamp en la respuesta de conversión         | Hecho (`Instant.now(clock)` en cotizaciones latest; fecha+hora en histórico)   | —                    |
-| 3   | Solo cotización entre dos monedas (sin monto)   | Hecho (`getCurrencyRate` → `CurrencyRateQuote`)                                | —                    |
+| 3   | Solo cotización entre dos monedas (sin monto)   | Hecho (`getCurrencyRate` → `CurrencyPairRateResponse`)                         | —                    |
 | 4   | Errores de conexión/API claros (404, 500, etc.) | Hecho (`CurrencyRateRemoteException`, `CurrencyRateTransportException`, tests) | —                    |
 | 5   | Un monto a varias monedas                       | Hecho                                                                          | —                    |
 | 6   | Histórico por fecha y varias monedas            | Hecho                                                                          | —                    |

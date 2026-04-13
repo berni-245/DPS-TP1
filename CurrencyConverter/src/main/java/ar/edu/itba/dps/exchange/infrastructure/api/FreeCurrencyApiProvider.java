@@ -1,7 +1,7 @@
 package ar.edu.itba.dps.exchange.infrastructure.api;
 
 import ar.edu.itba.dps.exchange.domain.CurrencyRate;
-import ar.edu.itba.dps.exchange.domain.TargetCurrencyQuote;
+import ar.edu.itba.dps.exchange.domain.TargetCurrencyRate;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailableException;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateRemoteException;
@@ -59,14 +59,14 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 	}
 
 	@Override
-	public List<TargetCurrencyQuote> getCurrencyRates(final Currency from, final List<Currency> to) {
+	public List<TargetCurrencyRate> getCurrencyRates(final Currency from, final List<Currency> to) {
 		final String currencies = to.stream()
 				.map(Currency::getCurrencyCode)
 				.collect(Collectors.joining(","));
 		final HttpResponse response = this.getConversionRates(from.getCurrencyCode(), currencies);
 		final ExchangeRateResponse rates = this.parseJsonOrUnavailable(response, ExchangeRateResponse.class);
 		return to.stream()
-				.map(currency -> new TargetCurrencyQuote(currency,
+				.map(currency -> new TargetCurrencyRate(currency,
 						new CurrencyRate(rates.getExchange(currency.getCurrencyCode()))))
 				.toList();
 	}
@@ -80,7 +80,7 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 	}
 
 	@Override
-	public List<TargetCurrencyQuote> getHistoricalCurrencyRates(final Currency from, final List<Currency> to,
+	public List<TargetCurrencyRate> getHistoricalCurrencyRates(final Currency from, final List<Currency> to,
 	                                                            final LocalDate date) {
 		final String currencies = to.stream()
 				.map(Currency::getCurrencyCode)
@@ -90,7 +90,7 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		final HistoricalExchangeRateResponse rates = this.parseJsonOrUnavailable(response,
 				HistoricalExchangeRateResponse.class);
 		return to.stream()
-				.map(currency -> new TargetCurrencyQuote(currency,
+				.map(currency -> new TargetCurrencyRate(currency,
 						new CurrencyRate(rates.getExchange(date.toString(), currency.getCurrencyCode()))))
 				.toList();
 	}

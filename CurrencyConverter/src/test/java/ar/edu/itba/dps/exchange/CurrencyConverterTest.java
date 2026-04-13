@@ -3,7 +3,7 @@ package ar.edu.itba.dps.exchange;
 import ar.edu.itba.dps.exchange.domain.CurrencyConverter;
 import ar.edu.itba.dps.exchange.domain.Money;
 import ar.edu.itba.dps.exchange.domain.CurrencyRate;
-import ar.edu.itba.dps.exchange.domain.TargetCurrencyQuote;
+import ar.edu.itba.dps.exchange.domain.TargetCurrencyRate;
 import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ class CurrencyConverterTest {
 		// Given
 		final var provider = mock(CurrencyRateProvider.class);
 		when(provider.getCurrencyRates(ARS, List.of(USD)))
-				.thenReturn(List.of(new TargetCurrencyQuote(USD, new CurrencyRate(BigDecimal.ONE))));
+				.thenReturn(List.of(new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE))));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
@@ -52,8 +52,8 @@ class CurrencyConverterTest {
 		final var targets = List.of(USD, EUR);
 		when(provider.getCurrencyRates(ARS, targets))
 				.thenReturn(List.of(
-						new TargetCurrencyQuote(USD, new CurrencyRate(BigDecimal.ONE)),
-						new TargetCurrencyQuote(EUR, new CurrencyRate(BigDecimal.valueOf(1.2)))));
+						new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE)),
+						new TargetCurrencyRate(EUR, new CurrencyRate(BigDecimal.valueOf(1.2)))));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
@@ -82,7 +82,7 @@ class CurrencyConverterTest {
 		// Given
 		final var provider = mock(CurrencyRateProvider.class);
 		when(provider.getCurrencyRates(ARS, List.of(USD)))
-				.thenReturn(List.of(new TargetCurrencyQuote(USD, new CurrencyRate(BigDecimal.ONE))));
+				.thenReturn(List.of(new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE))));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
@@ -93,7 +93,7 @@ class CurrencyConverterTest {
 		// Then
 		assertThat(result.fromCurrency(), is(ARS));
 		assertThat(result.toCurrency(), is(USD));
-		assertThat(result.rate(), comparesEqualTo(BigDecimal.valueOf(1.0)));
+		assertThat(result.rate().rate(), comparesEqualTo(BigDecimal.valueOf(1.0)));
 		assertThat(result.timestamp(), is(fixedInstant));
 	}
 
@@ -121,8 +121,8 @@ class CurrencyConverterTest {
 		final var measurementTime = LocalTime.of(23, 59, 59);
 		when(provider.getHistoricalCurrencyRates(ARS, targets, date))
 				.thenReturn(List.of(
-						new TargetCurrencyQuote(USD, new CurrencyRate(BigDecimal.ONE)),
-						new TargetCurrencyQuote(EUR, new CurrencyRate(BigDecimal.valueOf(0.85)))));
+						new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE)),
+						new TargetCurrencyRate(EUR, new CurrencyRate(BigDecimal.valueOf(0.85)))));
 		when(provider.getDailyTimeOfRateMeasurement()).thenReturn(measurementTime);
 		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
 
