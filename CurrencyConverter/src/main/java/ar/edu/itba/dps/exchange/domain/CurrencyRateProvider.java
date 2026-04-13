@@ -10,7 +10,7 @@ public interface CurrencyRateProvider {
 
 	List<Currency> getAvailableCurrencies();
 
-	LocalTime getDailyTimeOfRateMeasurement();
+	LocalTime getDailyTimeOfRateMeasurement(); // TODO sacar esto y dejar timestamp del día
 
 	List<TargetCurrencyRate> getHistoricalCurrencyRates(Currency from, List<Currency> to, LocalDate date);
 }
