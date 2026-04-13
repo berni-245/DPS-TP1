@@ -6,11 +6,11 @@ import java.util.Currency;
 import java.util.List;
 
 public interface CurrencyRateProvider {
-	List<CurrencyRate> getCurrencyRates(Currency from, List<Currency> to);
+	List<TargetCurrencyQuote> getCurrencyRates(Currency from, List<Currency> to);
 
 	List<Currency> getAvailableCurrencies();
 
 	LocalTime getDailyTimeOfRateMeasurement();
 
-	List<CurrencyRate> getHistoricalCurrencyRates(Currency from, List<Currency> to, LocalDate date);
+	List<TargetCurrencyQuote> getHistoricalCurrencyRates(Currency from, List<Currency> to, LocalDate date);
 }

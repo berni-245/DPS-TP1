@@ -43,9 +43,10 @@ class FreeCurrencyApiProviderIT {
 		final var usd = Currency.getInstance("USD");
 		final var date = LocalDate.of(2022, 1, 1);
 
-		final var rate = provider.getHistoricalCurrencyRates(eur, List.of(usd), date).getFirst();
+		final var quote = provider.getHistoricalCurrencyRates(eur, List.of(usd), date).getFirst();
 
-		Assertions.assertEquals(BigDecimal.valueOf(1.1347), rate.rate());
+		Assertions.assertEquals(usd, quote.target());
+		Assertions.assertEquals(BigDecimal.valueOf(1.1347), quote.quotedRate().rate());
 	}
 
 	@Test
@@ -63,8 +64,10 @@ class FreeCurrencyApiProviderIT {
 
 		// Then
 		Assertions.assertEquals(2, rates.size());
-		Assertions.assertEquals(BigDecimal.valueOf(1.1347), rates.get(0).rate());
-		Assertions.assertEquals(BigDecimal.valueOf(1.5623), rates.get(1).rate());
+		Assertions.assertEquals(usd, rates.get(0).target());
+		Assertions.assertEquals(cad, rates.get(1).target());
+		Assertions.assertEquals(BigDecimal.valueOf(1.1347), rates.get(0).quotedRate().rate());
+		Assertions.assertEquals(BigDecimal.valueOf(1.5623), rates.get(1).quotedRate().rate());
 	}
 
 	@Test
@@ -76,10 +79,11 @@ class FreeCurrencyApiProviderIT {
 		final var usd = Currency.getInstance("USD");
 
 		// When
-		final var rate = provider.getCurrencyRates(eur, List.of(usd)).getFirst();
+		final var quote = provider.getCurrencyRates(eur, List.of(usd)).getFirst();
 
 		// Then
-		Assertions.assertEquals(BigDecimal.valueOf(1.0847), rate.rate());
+		Assertions.assertEquals(usd, quote.target());
+		Assertions.assertEquals(BigDecimal.valueOf(1.0847), quote.quotedRate().rate());
 	}
 
 	@Test
@@ -96,7 +100,9 @@ class FreeCurrencyApiProviderIT {
 
 		// Then
 		Assertions.assertEquals(2, rates.size());
-		Assertions.assertEquals(BigDecimal.valueOf(1.0847), rates.get(0).rate());
-		Assertions.assertEquals(BigDecimal.valueOf(1.4823), rates.get(1).rate());
+		Assertions.assertEquals(usd, rates.get(0).target());
+		Assertions.assertEquals(cad, rates.get(1).target());
+		Assertions.assertEquals(BigDecimal.valueOf(1.0847), rates.get(0).quotedRate().rate());
+		Assertions.assertEquals(BigDecimal.valueOf(1.4823), rates.get(1).quotedRate().rate());
 	}
 }

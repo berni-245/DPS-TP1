@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Currency;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class CurrencyConverter {
@@ -21,24 +20,13 @@ public class CurrencyConverter {
 	}
 
 	public List<CurrencyConversionResponse> convert(final Money money, final List<Currency> to) {
-		final var currencyRates = this.currencyRateProvider.getCurrencyRates(money.currency(), to);
-		final var timestamp = Instant.now(clock);
-		return IntStream.range(0, to.size())
-				.mapToObj(i -> {
-					final var r = currencyRates.get(i).rate();
-					return new CurrencyConversionResponse(
-							money,
-							new Money(to.get(i), money.amount().multiply(r)),
-							r,
-							timestamp);
-				})
-				.toList();
+		final var quotes = this.currencyRateProvider.getCurrencyRates(money.currency(), to);
+		return toResponses(money, quotes, Instant.now(clock));
 	}
 
 	public CurrencyRateQuote getCurrencyRate(final Currency from, final Currency to) {
-		final var currencyRates = this.currencyRateProvider.getCurrencyRates(from, List.of(to));
-		final var currencyRate = currencyRates.getFirst();
-		return new CurrencyRateQuote(from, to, currencyRate.rate(), Instant.now(clock));
+		final var quote = this.currencyRateProvider.getCurrencyRates(from, List.of(to)).getFirst();
+		return new CurrencyRateQuote(from, quote.target(), quote.quotedRate().rate(), Instant.now(clock));
 	}
 
 	public List<Currency> getSupportedCurrencies() {
@@ -46,14 +34,21 @@ public class CurrencyConverter {
 	}
 
 	public List<CurrencyConversionResponse> convert(final Money money, final List<Currency> to, final LocalDate date) {
-		final var currencyRates = this.currencyRateProvider.getHistoricalCurrencyRates(money.currency(), to, date);
-		final var timestamp = date.atTime(this.currencyRateProvider.getDailyTimeOfRateMeasurement()).toInstant(ZoneOffset.UTC);
-		return IntStream.range(0, to.size())
-				.mapToObj(i -> {
-					final var r = currencyRates.get(i).rate();
+		final var quotes = this.currencyRateProvider.getHistoricalCurrencyRates(money.currency(), to, date);
+		final var timestamp = date.atTime(this.currencyRateProvider.getDailyTimeOfRateMeasurement())
+				.toInstant(ZoneOffset.UTC);
+		return toResponses(money, quotes, timestamp);
+	}
+
+	private static List<CurrencyConversionResponse> toResponses(final Money money,
+	                                                              final List<TargetCurrencyQuote> quotes,
+	                                                              final Instant timestamp) {
+		return quotes.stream()
+				.map(q -> {
+					final var r = q.quotedRate().rate();
 					return new CurrencyConversionResponse(
 							money,
-							new Money(to.get(i), money.amount().multiply(r)),
+							new Money(q.target(), money.amount().multiply(r)),
 							r,
 							timestamp);
 				})
