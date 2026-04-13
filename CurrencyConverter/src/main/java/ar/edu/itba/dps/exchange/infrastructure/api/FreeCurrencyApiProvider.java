@@ -64,7 +64,7 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 				.map(Currency::getCurrencyCode)
 				.collect(Collectors.joining(","));
 		final HttpResponse response = this.getConversionRates(from.getCurrencyCode(), currencies);
-		final ExchangeRateResponse rates = this.parseJsonOrUnavailable(response, ExchangeRateResponse.class);
+		final ExchangeRateResponse rates = this.parseJson(response, ExchangeRateResponse.class);
 		return to.stream()
 				.map(currency -> new TargetCurrencyRate(currency,
 						new CurrencyRate(rates.getExchange(currency.getCurrencyCode()))))
@@ -74,9 +74,9 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 	@Override
 	public List<Currency> getAvailableCurrencies() {
 		final HttpResponse response = this.getCurrencies();
-		final AvailableCurrenciesResponse body = this.parseJsonOrUnavailable(response,
+		final AvailableCurrenciesResponse availableCurrencies = this.parseJson(response,
 				AvailableCurrenciesResponse.class);
-		return body.getCurrencies();
+		return availableCurrencies.getCurrencies();
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 				.collect(Collectors.joining(","));
 		final HttpResponse response = this.getHistoricalConversionRate(from.getCurrencyCode(), currencies,
 				date.toString());
-		final HistoricalExchangeRateResponse rates = this.parseJsonOrUnavailable(response,
+		final HistoricalExchangeRateResponse rates = this.parseJson(response,
 				HistoricalExchangeRateResponse.class);
 		return to.stream()
 				.map(currency -> new TargetCurrencyRate(currency,
@@ -100,7 +100,7 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		return LocalTime.of(23, 59, 59);
 	}
 
-	private <T> T parseJsonOrUnavailable(final HttpResponse response, final Class<T> type) {
+	private <T> T parseJson(final HttpResponse response, final Class<T> type) {
 		if (response.statusCode() != HttpURLConnection.HTTP_OK) {
 			final String excerpt = sanitizeResponseExcerpt(response.body());
 			LOG.warn("Currency service returned HTTP {}: {}", response.statusCode(), excerpt);
@@ -115,10 +115,13 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		}
 	}
 
+	// TODO ver por qué es package private
 	static String sanitizeResponseExcerpt(final String body) {
 		if (body == null || body.isBlank()) {
 			return "";
 		}
+		// TODO por qué hacemos esto? Estamos mezclando niveles de abstracción tal vez? No haría falta un
+		// TODO json parser o ver si gson tiene algo para esto?
 		String s = body.strip().replace('\n', ' ').replace('\r', ' ');
 		if (s.length() > RESPONSE_DETAIL_MAX_LEN) {
 			s = s.substring(0, RESPONSE_DETAIL_MAX_LEN) + "…";
@@ -130,6 +133,7 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		try {
 			return this.httpClient.get(url, queryParams, JSON_REQUEST_HEADERS);
 		} catch (final HttpTransportException e) {
+			// TODO ver el nombre
 			throw new CurrencyRateTransportException("Failed to contact currency service", e);
 		}
 	}

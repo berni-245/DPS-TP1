@@ -15,6 +15,7 @@ public class CurrencyConverter {
 	private final CurrencyRateProvider currencyRateProvider;
 	private final Clock clock;
 
+	// TODO borrar para sacar tests
 	public CurrencyConversionResponse convert(final Money money, final Currency to) {
 		return convert(money, List.of(to)).getFirst();
 	}
@@ -24,7 +25,8 @@ public class CurrencyConverter {
 		return toResponses(money, targetRates, Instant.now(clock));
 	}
 
-	public CurrencyRateResponse getCurrencyRate(final Currency from, final Currency to) {
+    // TODO quitar este método ya que tenemos de una a varias en otro método
+    public CurrencyRateResponse getCurrencyRate(final Currency from, final Currency to) {
 		final var targetRate = this.currencyRateProvider.getCurrencyRates(from, List.of(to)).getFirst();
 		return new CurrencyRateResponse(from, targetRate.target(), targetRate.currencyRate(), Instant.now(clock));
 	}

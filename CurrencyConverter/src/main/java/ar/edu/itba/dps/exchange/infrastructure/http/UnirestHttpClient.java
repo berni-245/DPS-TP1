@@ -16,14 +16,15 @@ public class UnirestHttpClient implements HttpClient {
 	public HttpResponse get(final URI url, final Map<String, Object> queryParams,
 	                        final Map<String, String> headers) {
 		try {
-			final var request = Unirest.get(url.toString())
+			final var response = Unirest.get(url.toString())
 					.queryString(Objects.requireNonNullElse(queryParams, Map.of()))
-					.headers(headers);
-			final var response = request.asString();
+					.headers(headers) // TODO ver si hacer el requireNonNullElse
+					.asString();
 			return new HttpResponse(response.getBody(), response.getStatus());
 		} catch (final Exception e) {
 			LOG.warn("HTTP GET failed for {}", url.getPath(), e);
 			throw new HttpTransportException("HTTP request failed: " + e.getMessage(), e);
+			// TODO ver nombre de excepción
 		}
 	}
 }
