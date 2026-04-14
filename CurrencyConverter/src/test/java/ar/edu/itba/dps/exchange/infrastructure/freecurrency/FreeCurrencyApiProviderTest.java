@@ -15,9 +15,10 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,6 +58,10 @@ class FreeCurrencyApiProviderTest {
 	private static final String SIMULATED_CAUSE_MESSAGE = "simulated";
 	private static final String FAILED_TO_CONTACT_SNIPPET = "Failed to contact";
 
+	private static void assertBigDecimalEquals(BigDecimal expected, BigDecimal actual) {
+		assertEquals(0, expected.compareTo(actual));
+	}
+
 	@Test
 	void getCurrencyRatesTransportFailureThrowsTransportException() {
 		final var http = mock(HttpClient.class);
@@ -67,8 +72,8 @@ class FreeCurrencyApiProviderTest {
 		final var ex = assertThrows(CurrencyRateConnectionException.class,
 				() -> provider.getCurrencyRates(EUR, List.of(USD)));
 
-		assertThat(ex.getMessage(), containsString(FAILED_TO_CONTACT_SNIPPET));
-		assertThat(ex.getCause(), instanceOf(HttpClientException.class));
+		assertTrue(ex.getMessage().contains(FAILED_TO_CONTACT_SNIPPET));
+		assertInstanceOf(HttpClientException.class, ex.getCause());
 	}
 
 	@Test
@@ -81,7 +86,7 @@ class FreeCurrencyApiProviderTest {
 		final var ex = assertThrows(CurrencyRateRemoteException.class,
 				() -> provider.getHistoricalCurrencyRates(EUR, List.of(USD), HISTORICAL_DATE));
 
-		assertThat(ex.getMessage(), containsString(Integer.toString(HTTP_NOT_FOUND)));
+		assertTrue(ex.getMessage().contains(Integer.toString(HTTP_NOT_FOUND)));
 	}
 
 	@Test
@@ -113,8 +118,8 @@ class FreeCurrencyApiProviderTest {
 		final var ex = assertThrows(CurrencyRateRemoteException.class,
 				() -> provider.getCurrencyRates(EUR, List.of(USD)));
 
-		assertThat(ex.getMessage(), containsString(Integer.toString(HTTP_NOT_FOUND)));
-		assertThat(ex.getMessage(), containsString(NOT_FOUND_PHRASE));
+		assertTrue(ex.getMessage().contains(Integer.toString(HTTP_NOT_FOUND)));
+		assertTrue(ex.getMessage().contains(NOT_FOUND_PHRASE));
 	}
 
 	@Test
@@ -127,7 +132,7 @@ class FreeCurrencyApiProviderTest {
 		final var ex = assertThrows(CurrencyRateRemoteException.class,
 				provider::getAvailableCurrencies);
 
-		assertThat(ex.getMessage(), containsString(Integer.toString(HTTP_INTERNAL_SERVER_ERROR)));
+		assertTrue(ex.getMessage().contains(Integer.toString(HTTP_INTERNAL_SERVER_ERROR)));
 	}
 
 	@Test
@@ -140,8 +145,8 @@ class FreeCurrencyApiProviderTest {
 		final var ex = assertThrows(CurrencyRateConnectionException.class,
 				() -> provider.getHistoricalCurrencyRates(EUR, List.of(USD), HISTORICAL_DATE));
 
-		assertThat(ex.getMessage(), containsString(FAILED_TO_CONTACT_SNIPPET));
-		assertThat(ex.getCause(), instanceOf(HttpClientException.class));
+		assertTrue(ex.getMessage().contains(FAILED_TO_CONTACT_SNIPPET));
+		assertInstanceOf(HttpClientException.class, ex.getCause());
 	}
 
 	@Test
@@ -193,7 +198,7 @@ class FreeCurrencyApiProviderTest {
 
 		final var targetRate = provider.getCurrencyRates(EUR, List.of(USD)).getFirst();
 
-		assertThat(targetRate.target(), is(USD));
-		assertThat(targetRate.currencyRate().rate(), comparesEqualTo(LATEST_USD_RATE));
+		assertEquals(USD, targetRate.target());
+		assertBigDecimalEquals(LATEST_USD_RATE, targetRate.currencyRate().rate());
 	}
 }

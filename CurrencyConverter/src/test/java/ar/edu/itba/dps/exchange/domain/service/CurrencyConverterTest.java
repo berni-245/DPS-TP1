@@ -12,9 +12,9 @@ import java.util.Currency;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -50,6 +50,10 @@ class CurrencyConverterTest {
 	private static final BigDecimal NEGATIVE_CONVERTED_WITH_EUR_RATE = BigDecimal.valueOf(-120.0);
 	private static final BigDecimal RATE_ZERO = BigDecimal.ZERO;
 
+	private static void assertBigDecimalEquals(BigDecimal expected, BigDecimal actual) {
+		assertEquals(0, expected.compareTo(actual));
+	}
+
 	@Test
 	void convertSingleCurrency() {
 		final var provider = mock(CurrencyRateProvider.class);
@@ -60,12 +64,12 @@ class CurrencyConverterTest {
 
 		final var result = converter.convert(new Money(ARS, AMOUNT_HUNDRED), USD);
 
-		assertThat(result.source().currency(), is(ARS));
-		assertThat(result.source().amount(), comparesEqualTo(AMOUNT_HUNDRED_DECIMAL));
-		assertThat(result.target().currency(), is(USD));
-		assertThat(result.target().amount(), comparesEqualTo(AMOUNT_HUNDRED_DECIMAL));
-		assertThat(result.rate().rate(), comparesEqualTo(RATE_PARITY));
-		assertThat(result.timestamp(), is(FIXED_INSTANT));
+		assertEquals(ARS, result.source().currency());
+		assertBigDecimalEquals(AMOUNT_HUNDRED_DECIMAL, result.source().amount());
+		assertEquals(USD, result.target().currency());
+		assertBigDecimalEquals(AMOUNT_HUNDRED_DECIMAL, result.target().amount());
+		assertBigDecimalEquals(RATE_PARITY, result.rate().rate());
+		assertEquals(FIXED_INSTANT, result.timestamp());
 	}
 
 	@Test
@@ -81,19 +85,19 @@ class CurrencyConverterTest {
 
 		final var results = converter.convert(new Money(ARS, AMOUNT_HUNDRED), targets);
 
-		assertThat(results, hasSize(MULTI_TARGET_COUNT));
-		assertThat(results.get(FIRST_RESULT_INDEX).source().currency(), is(ARS));
-		assertThat(results.get(SECOND_RESULT_INDEX).source().currency(), is(ARS));
-		assertThat(results.get(FIRST_RESULT_INDEX).source().amount(), comparesEqualTo(AMOUNT_HUNDRED_DECIMAL));
-		assertThat(results.get(SECOND_RESULT_INDEX).source().amount(), comparesEqualTo(AMOUNT_HUNDRED_DECIMAL));
-		assertThat(results.get(FIRST_RESULT_INDEX).target().currency(), is(USD));
-		assertThat(results.get(SECOND_RESULT_INDEX).target().currency(), is(EUR));
-		assertThat(results.get(FIRST_RESULT_INDEX).target().amount(), comparesEqualTo(AMOUNT_HUNDRED_DECIMAL));
-		assertThat(results.get(SECOND_RESULT_INDEX).target().amount(), comparesEqualTo(EUR_CONVERTED_AMOUNT));
-		assertThat(results.get(FIRST_RESULT_INDEX).rate().rate(), comparesEqualTo(RATE_PARITY));
-		assertThat(results.get(SECOND_RESULT_INDEX).rate().rate(), comparesEqualTo(EUR_SPOT_RATE));
-		assertThat(results.get(FIRST_RESULT_INDEX).timestamp(), is(FIXED_INSTANT));
-		assertThat(results.get(SECOND_RESULT_INDEX).timestamp(), is(FIXED_INSTANT));
+		assertEquals(MULTI_TARGET_COUNT, results.size());
+		assertEquals(ARS, results.get(FIRST_RESULT_INDEX).source().currency());
+		assertEquals(ARS, results.get(SECOND_RESULT_INDEX).source().currency());
+		assertBigDecimalEquals(AMOUNT_HUNDRED_DECIMAL, results.get(FIRST_RESULT_INDEX).source().amount());
+		assertBigDecimalEquals(AMOUNT_HUNDRED_DECIMAL, results.get(SECOND_RESULT_INDEX).source().amount());
+		assertEquals(USD, results.get(FIRST_RESULT_INDEX).target().currency());
+		assertEquals(EUR, results.get(SECOND_RESULT_INDEX).target().currency());
+		assertBigDecimalEquals(AMOUNT_HUNDRED_DECIMAL, results.get(FIRST_RESULT_INDEX).target().amount());
+		assertBigDecimalEquals(EUR_CONVERTED_AMOUNT, results.get(SECOND_RESULT_INDEX).target().amount());
+		assertBigDecimalEquals(RATE_PARITY, results.get(FIRST_RESULT_INDEX).rate().rate());
+		assertBigDecimalEquals(EUR_SPOT_RATE, results.get(SECOND_RESULT_INDEX).rate().rate());
+		assertEquals(FIXED_INSTANT, results.get(FIRST_RESULT_INDEX).timestamp());
+		assertEquals(FIXED_INSTANT, results.get(SECOND_RESULT_INDEX).timestamp());
 	}
 
 	@Test
@@ -106,10 +110,10 @@ class CurrencyConverterTest {
 
 		final var result = converter.getCurrencyRate(ARS, USD);
 
-		assertThat(result.fromCurrency(), is(ARS));
-		assertThat(result.toCurrency(), is(USD));
-		assertThat(result.rate().rate(), comparesEqualTo(RATE_PARITY));
-		assertThat(result.timestamp(), is(FIXED_INSTANT));
+		assertEquals(ARS, result.fromCurrency());
+		assertEquals(USD, result.toCurrency());
+		assertBigDecimalEquals(RATE_PARITY, result.rate().rate());
+		assertEquals(FIXED_INSTANT, result.timestamp());
 	}
 
 	@Test
@@ -121,7 +125,7 @@ class CurrencyConverterTest {
 
 		final var result = converter.getSupportedCurrencies();
 
-		assertThat(result, is(expectedCurrencies));
+		assertEquals(expectedCurrencies, result);
 	}
 
 	@Test
@@ -132,7 +136,7 @@ class CurrencyConverterTest {
 
 		final var results = converter.convert(new Money(ARS, BigDecimal.ONE), List.of());
 
-		assertThat(results, empty());
+		assertTrue(results.isEmpty());
 	}
 
 	@Test
@@ -148,19 +152,19 @@ class CurrencyConverterTest {
 		final var results = converter.convert(new Money(ARS, AMOUNT_HUNDRED), targets, HISTORICAL_DATE);
 
 		final var expectedTimestamp = HISTORICAL_DATE.atStartOfDay().toInstant(ZoneOffset.UTC);
-		assertThat(results, hasSize(MULTI_TARGET_COUNT));
-		assertThat(results.get(FIRST_RESULT_INDEX).source().currency(), is(ARS));
-		assertThat(results.get(SECOND_RESULT_INDEX).source().currency(), is(ARS));
-		assertThat(results.get(FIRST_RESULT_INDEX).source().amount(), comparesEqualTo(AMOUNT_HUNDRED_DECIMAL));
-		assertThat(results.get(SECOND_RESULT_INDEX).source().amount(), comparesEqualTo(AMOUNT_HUNDRED_DECIMAL));
-		assertThat(results.get(FIRST_RESULT_INDEX).target().currency(), is(USD));
-		assertThat(results.get(SECOND_RESULT_INDEX).target().currency(), is(EUR));
-		assertThat(results.get(FIRST_RESULT_INDEX).target().amount(), comparesEqualTo(AMOUNT_HUNDRED_DECIMAL));
-		assertThat(results.get(SECOND_RESULT_INDEX).target().amount(), comparesEqualTo(HISTORICAL_EUR_CONVERTED_AMOUNT));
-		assertThat(results.get(FIRST_RESULT_INDEX).rate().rate(), comparesEqualTo(RATE_PARITY));
-		assertThat(results.get(SECOND_RESULT_INDEX).rate().rate(), comparesEqualTo(HISTORICAL_EUR_RATE));
-		assertThat(results.get(FIRST_RESULT_INDEX).timestamp(), is(expectedTimestamp));
-		assertThat(results.get(SECOND_RESULT_INDEX).timestamp(), is(expectedTimestamp));
+		assertEquals(MULTI_TARGET_COUNT, results.size());
+		assertEquals(ARS, results.get(FIRST_RESULT_INDEX).source().currency());
+		assertEquals(ARS, results.get(SECOND_RESULT_INDEX).source().currency());
+		assertBigDecimalEquals(AMOUNT_HUNDRED_DECIMAL, results.get(FIRST_RESULT_INDEX).source().amount());
+		assertBigDecimalEquals(AMOUNT_HUNDRED_DECIMAL, results.get(SECOND_RESULT_INDEX).source().amount());
+		assertEquals(USD, results.get(FIRST_RESULT_INDEX).target().currency());
+		assertEquals(EUR, results.get(SECOND_RESULT_INDEX).target().currency());
+		assertBigDecimalEquals(AMOUNT_HUNDRED_DECIMAL, results.get(FIRST_RESULT_INDEX).target().amount());
+		assertBigDecimalEquals(HISTORICAL_EUR_CONVERTED_AMOUNT, results.get(SECOND_RESULT_INDEX).target().amount());
+		assertBigDecimalEquals(RATE_PARITY, results.get(FIRST_RESULT_INDEX).rate().rate());
+		assertBigDecimalEquals(HISTORICAL_EUR_RATE, results.get(SECOND_RESULT_INDEX).rate().rate());
+		assertEquals(expectedTimestamp, results.get(FIRST_RESULT_INDEX).timestamp());
+		assertEquals(expectedTimestamp, results.get(SECOND_RESULT_INDEX).timestamp());
 	}
 
 	@Test
@@ -172,7 +176,7 @@ class CurrencyConverterTest {
 
 		final var results = converter.convert(new Money(ARS, AMOUNT_HUNDRED), List.of(), HISTORICAL_DATE);
 
-		assertThat(results, empty());
+		assertTrue(results.isEmpty());
 	}
 
 	@Test
@@ -181,7 +185,7 @@ class CurrencyConverterTest {
 		when(provider.getAvailableCurrencies()).thenReturn(List.of());
 		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
 
-		assertThat(converter.getSupportedCurrencies(), empty());
+		assertTrue(converter.getSupportedCurrencies().isEmpty());
 	}
 
 	@Test
@@ -194,9 +198,9 @@ class CurrencyConverterTest {
 
 		final var result = converter.convert(new Money(ARS, AMOUNT_ZERO), EUR);
 
-		assertThat(result.source().amount(), comparesEqualTo(AMOUNT_ZERO));
-		assertThat(result.target().amount(), comparesEqualTo(AMOUNT_ZERO));
-		assertThat(result.rate().rate(), comparesEqualTo(EUR_SPOT_RATE));
+		assertBigDecimalEquals(AMOUNT_ZERO, result.source().amount());
+		assertBigDecimalEquals(AMOUNT_ZERO, result.target().amount());
+		assertBigDecimalEquals(EUR_SPOT_RATE, result.rate().rate());
 	}
 
 	@Test
@@ -209,8 +213,8 @@ class CurrencyConverterTest {
 
 		final var result = converter.convert(new Money(ARS, AMOUNT_NEGATIVE), EUR);
 
-		assertThat(result.source().amount(), comparesEqualTo(AMOUNT_NEGATIVE));
-		assertThat(result.target().amount(), comparesEqualTo(NEGATIVE_CONVERTED_WITH_EUR_RATE));
+		assertBigDecimalEquals(AMOUNT_NEGATIVE, result.source().amount());
+		assertBigDecimalEquals(NEGATIVE_CONVERTED_WITH_EUR_RATE, result.target().amount());
 	}
 
 	@Test
@@ -223,9 +227,9 @@ class CurrencyConverterTest {
 
 		final var result = converter.convert(new Money(ARS, AMOUNT_HUNDRED), USD);
 
-		assertThat(result.source().amount(), comparesEqualTo(AMOUNT_HUNDRED_DECIMAL));
-		assertThat(result.target().amount(), comparesEqualTo(AMOUNT_ZERO));
-		assertThat(result.rate().rate(), comparesEqualTo(RATE_ZERO));
+		assertBigDecimalEquals(AMOUNT_HUNDRED_DECIMAL, result.source().amount());
+		assertBigDecimalEquals(AMOUNT_ZERO, result.target().amount());
+		assertBigDecimalEquals(RATE_ZERO, result.rate().rate());
 	}
 
 	@Test

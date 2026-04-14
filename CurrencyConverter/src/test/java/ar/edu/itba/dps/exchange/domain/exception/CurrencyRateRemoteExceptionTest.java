@@ -2,8 +2,8 @@ package ar.edu.itba.dps.exchange.domain.exception;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CurrencyRateRemoteExceptionTest {
 
@@ -26,33 +26,34 @@ class CurrencyRateRemoteExceptionTest {
 	@Test
 	void nullBodyOmitsDetailSuffix() {
 		final var ex = new CurrencyRateRemoteException(STATUS_BAD_GATEWAY, null);
-		assertThat(ex.getMessage(), is(MESSAGE_STATUS_502));
+		assertEquals(MESSAGE_STATUS_502, ex.getMessage());
 	}
 
 	@Test
 	void blankBodyOmitsDetailSuffix() {
 		final var ex = new CurrencyRateRemoteException(STATUS_SERVICE_UNAVAILABLE, BLANK_RESPONSE_BODY);
-		assertThat(ex.getMessage(), is(MESSAGE_STATUS_503));
+		assertEquals(MESSAGE_STATUS_503, ex.getMessage());
 	}
 
 	@Test
 	void emptyBodyOmitsDetailSuffix() {
 		final var ex = new CurrencyRateRemoteException(STATUS_SERVICE_UNAVAILABLE, EMPTY_RESPONSE_BODY);
-		assertThat(ex.getMessage(), is(MESSAGE_STATUS_503));
+		assertEquals(MESSAGE_STATUS_503, ex.getMessage());
 	}
 
 	@Test
 	void nonBlankBodyIncludedInMessage() {
 		final var ex = new CurrencyRateRemoteException(STATUS_NOT_FOUND, NON_EMPTY_RESPONSE_BODY);
-		assertThat(ex.getMessage(), containsString(Integer.toString(STATUS_NOT_FOUND)));
-		assertThat(ex.getMessage(), containsString(NON_EMPTY_RESPONSE_BODY));
+		final var message = ex.getMessage();
+		assertTrue(message.contains(Integer.toString(STATUS_NOT_FOUND)));
+		assertTrue(message.contains(NON_EMPTY_RESPONSE_BODY));
 	}
 
 	@Test
 	void longResponseBodyIsTruncatedWithEllipsis() {
 		final String longBody = LONG_BODY_FILLER_CHAR.repeat(LONG_RESPONSE_BODY_LENGTH);
 		final var ex = new CurrencyRateRemoteException(STATUS_INTERNAL_SERVER_ERROR, longBody);
-		assertThat(ex.getMessage(), endsWith(ELLIPSIS_CHAR));
-		assertThat(ex.getMessage().length(), greaterThan(MESSAGE_PREFIX_STATUS_500.length()));
+		assertTrue(ex.getMessage().endsWith(ELLIPSIS_CHAR));
+		assertTrue(ex.getMessage().length() > MESSAGE_PREFIX_STATUS_500.length());
 	}
 }

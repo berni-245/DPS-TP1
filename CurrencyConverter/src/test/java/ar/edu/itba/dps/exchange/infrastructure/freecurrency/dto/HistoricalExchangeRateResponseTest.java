@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HistoricalExchangeRateResponseTest {
 
@@ -21,7 +20,7 @@ class HistoricalExchangeRateResponseTest {
 		final var r = new HistoricalExchangeRateResponse(null);
 		final var ex = assertThrows(IllegalStateException.class,
 				() -> r.getExchange(HISTORICAL_DATE, USD_CODE));
-		assertThat(ex.getMessage(), containsString(EXCHANGE_DATA_SNIPPET));
+		assertTrue(ex.getMessage().contains(EXCHANGE_DATA_SNIPPET));
 	}
 
 	@Test
@@ -29,7 +28,7 @@ class HistoricalExchangeRateResponseTest {
 		final var r = new HistoricalExchangeRateResponse(Map.of());
 		final var ex = assertThrows(IllegalStateException.class,
 				() -> r.getExchange(HISTORICAL_DATE, USD_CODE));
-		assertThat(ex.getMessage(), containsString(HISTORICAL_DATE));
+		assertTrue(ex.getMessage().contains(HISTORICAL_DATE));
 	}
 
 	@Test
@@ -38,6 +37,6 @@ class HistoricalExchangeRateResponseTest {
 				Map.of(HISTORICAL_DATE, Map.of(EUR_CODE, BigDecimal.ONE)));
 		final var ex = assertThrows(IllegalStateException.class,
 				() -> r.getExchange(HISTORICAL_DATE, USD_CODE));
-		assertThat(ex.getMessage(), containsString(USD_CODE));
+		assertTrue(ex.getMessage().contains(USD_CODE));
 	}
 }

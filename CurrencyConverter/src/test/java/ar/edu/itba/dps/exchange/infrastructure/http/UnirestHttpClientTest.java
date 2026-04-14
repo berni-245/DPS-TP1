@@ -12,9 +12,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UnirestHttpClientTest {
 
@@ -53,8 +53,8 @@ class UnirestHttpClientTest {
 		final var uri = URI.create(wireMock.baseUrl() + PATH_LATEST);
 		final var response = client.get(uri, Map.of(QUERY_PARAM_BASE_CURRENCY, EUR_CODE), Map.of());
 
-		assertThat(response.statusCode(), is(HTTP_NOT_FOUND));
-		assertThat(response.body(), containsString(ERROR_NOT_FOUND_VALUE));
+		assertEquals(HTTP_NOT_FOUND, response.statusCode());
+		assertTrue(response.body().contains(ERROR_NOT_FOUND_VALUE));
 	}
 
 	@Test
@@ -66,8 +66,8 @@ class UnirestHttpClientTest {
 		final var uri = URI.create(wireMock.baseUrl() + PATH_QUERY);
 		final var response = client.get(uri, null, Map.of());
 
-		assertThat(response.statusCode(), is(HTTP_OK));
-		assertThat(response.body(), is(BODY_OK));
+		assertEquals(HTTP_OK, response.statusCode());
+		assertEquals(BODY_OK, response.body());
 	}
 
 	@Test
@@ -79,8 +79,8 @@ class UnirestHttpClientTest {
 		final var uri = URI.create(wireMock.baseUrl() + PATH_FAIL);
 		final var response = client.get(uri, Map.of(), Map.of());
 
-		assertThat(response.statusCode(), is(HTTP_INTERNAL_SERVER_ERROR));
-		assertThat(response.body(), is(BODY_BOOM));
+		assertEquals(HTTP_INTERNAL_SERVER_ERROR, response.statusCode());
+		assertEquals(BODY_BOOM, response.body());
 	}
 
 	@Test

@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.comparesEqualTo;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MoneyTest {
 
@@ -29,7 +27,7 @@ class MoneyTest {
 
 		final var converted = money.convert(line);
 
-		assertThat(converted.currency(), is(EUR));
-		assertThat(converted.amount(), comparesEqualTo(EXPECTED_CONVERTED_AMOUNT));
+		assertEquals(EUR, converted.currency());
+		assertEquals(0, EXPECTED_CONVERTED_AMOUNT.compareTo(converted.amount()));
 	}
 }

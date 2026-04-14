@@ -2,8 +2,8 @@ package ar.edu.itba.dps.exchange.domain.exception;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class CurrencyRateNotAvailableExceptionTest {
 
@@ -14,14 +14,14 @@ class CurrencyRateNotAvailableExceptionTest {
 	@Test
 	void noArgConstructorSetsDefaultMessage() {
 		final var ex = new CurrencyRateNotAvailableException();
-		assertThat(ex.getMessage(), is(DEFAULT_MESSAGE));
+		assertEquals(DEFAULT_MESSAGE, ex.getMessage());
 	}
 
 	@Test
 	void messageConstructorPreservesCause() {
 		final var cause = new RuntimeException(CAUSE_MESSAGE);
 		final var ex = new CurrencyRateNotAvailableException(CUSTOM_MESSAGE, cause);
-		assertThat(ex.getMessage(), is(CUSTOM_MESSAGE));
-		assertThat(ex.getCause(), is(cause));
+		assertEquals(CUSTOM_MESSAGE, ex.getMessage());
+		assertSame(cause, ex.getCause());
 	}
 }
