@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +28,7 @@ class CurrencyConverterTest {
 	void testConvert() {
 		// Given
 		final var provider = mock(CurrencyRateProvider.class);
-		when(provider.getCurrencyRates(ARS, List.of(USD)))
+		when(provider.getCurrencyRates(eq(ARS), eq(List.of(USD))))
 				.thenReturn(List.of(new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE))));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
@@ -81,7 +82,7 @@ class CurrencyConverterTest {
 	void testGetExchangeRate() {
 		// Given
 		final var provider = mock(CurrencyRateProvider.class);
-		when(provider.getCurrencyRates(ARS, List.of(USD)))
+		when(provider.getCurrencyRates(eq(ARS), eq(List.of(USD))))
 				.thenReturn(List.of(new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE))));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
@@ -110,6 +111,17 @@ class CurrencyConverterTest {
 
 		// Then
 		assertThat(result, is(expectedCurrencies));
+	}
+
+	@Test
+	void convert_whenNoTargetCurrencies_returnsEmptyList() {
+		final var provider = mock(CurrencyRateProvider.class);
+		when(provider.getCurrencyRates(eq(ARS), eq(List.of()))).thenReturn(List.of());
+		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
+
+		final var results = converter.convert(new Money(ARS, BigDecimal.ONE), List.of());
+
+		assertThat(results, empty());
 	}
 
 	@Test

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,54 @@ class FreeCurrencyApiProviderTest {
 
 	private static final Currency EUR = Currency.getInstance("EUR");
 	private static final Currency USD = Currency.getInstance("USD");
+
+	@Test
+	void getCurrencyRates_transportFailure_throwsTransportException() {
+		final var http = mock(HttpClient.class);
+		when(http.get(any(URI.class), any(), any()))
+				.thenThrow(new HttpTransportException("timeout", new RuntimeException("simulated")));
+		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
+
+		final var ex = assertThrows(CurrencyRateTransportException.class,
+				() -> provider.getCurrencyRates(EUR, List.of(USD)));
+
+		assertThat(ex.getMessage(), containsString("Failed to contact"));
+		assertThat(ex.getCause(), instanceOf(HttpTransportException.class));
+	}
+
+	@Test
+	void historicalHttp404_throwsRemoteExceptionWithStatus() {
+		final var http = mock(HttpClient.class);
+		when(http.get(any(URI.class), any(), any())).thenReturn(
+				new HttpResponse("{\"message\":\"Not Found\"}", 404));
+		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
+		final var date = LocalDate.of(2022, 1, 1);
+
+		final var ex = assertThrows(CurrencyRateRemoteException.class,
+				() -> provider.getHistoricalCurrencyRates(EUR, List.of(USD), date));
+
+		assertThat(ex.statusCode(), is(404));
+		assertThat(ex.getMessage(), containsString("404"));
+	}
+
+	@Test
+	void getAvailableCurrencies_invalidJson_throwsNotAvailable() {
+		final var http = mock(HttpClient.class);
+		when(http.get(any(URI.class), any(), any())).thenReturn(new HttpResponse("not-json", 200));
+		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
+
+		assertThrows(CurrencyRateNotAvailableException.class, provider::getAvailableCurrencies);
+	}
+
+	@Test
+	void getHistoricalCurrencyRates_invalidJson_throwsNotAvailable() {
+		final var http = mock(HttpClient.class);
+		when(http.get(any(URI.class), any(), any())).thenReturn(new HttpResponse("not-json", 200));
+		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
+
+		assertThrows(CurrencyRateNotAvailableException.class,
+				() -> provider.getHistoricalCurrencyRates(EUR, List.of(USD), LocalDate.of(2022, 1, 1)));
+	}
 
 	@Test
 	void http404_throwsRemoteExceptionWithStatus() {

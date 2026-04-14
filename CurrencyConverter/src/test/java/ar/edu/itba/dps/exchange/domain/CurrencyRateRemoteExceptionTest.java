@@ -37,4 +37,14 @@ class CurrencyRateRemoteExceptionTest {
 		assertThat(ex.getMessage(), containsString("404"));
 		assertThat(ex.getMessage(), containsString("oops"));
 	}
+
+	@Test
+	void longResponseBody_isTruncatedWithEllipsis() {
+		final String longBody = "x".repeat(300);
+		final var ex = new CurrencyRateRemoteException(500, longBody);
+		assertThat(ex.responseDetail().isPresent(), is(true));
+		assertThat(ex.responseDetail().get(), endsWith("…"));
+		assertThat(ex.responseDetail().get().length(), is(257));
+		assertThat(ex.getMessage(), containsString("…"));
+	}
 }

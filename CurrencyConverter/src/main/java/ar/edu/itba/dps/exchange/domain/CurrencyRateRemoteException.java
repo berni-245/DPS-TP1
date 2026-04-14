@@ -13,10 +13,9 @@ public final class CurrencyRateRemoteException extends CurrencyRateProviderExcep
 	private final String responseDetail;
 
 	public CurrencyRateRemoteException(final int statusCode, final String body) {
-		String sanitizedBody = sanitizeBody(body);
-		super(buildMessage(statusCode, sanitizedBody));
+		super(buildMessage(statusCode, sanitizeBody(body)));
 		this.statusCode = statusCode;
-		this.responseDetail = sanitizedBody;
+		this.responseDetail = sanitizeBody(body);
 	}
 
 	public int statusCode() {

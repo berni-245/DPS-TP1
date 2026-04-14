@@ -43,9 +43,7 @@ public class CurrencyConverter {
 	                                                              final List<TargetCurrencyRate> targetRates,
 	                                                              final Instant timestamp) {
 		return targetRates.stream()
-				.map(t -> {
-					return new CurrencyConversionResponse(money, money.convert(t), t.currencyRate(), timestamp);
-				})
+				.map(t -> new CurrencyConversionResponse(money, money.convert(t), t.currencyRate(), timestamp))
 				.toList();
 	}
 }
