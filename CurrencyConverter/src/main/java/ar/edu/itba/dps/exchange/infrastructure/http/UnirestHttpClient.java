@@ -18,7 +18,7 @@ public class UnirestHttpClient implements HttpClient {
 		try {
 			final var response = Unirest.get(url.toString())
 					.queryString(Objects.requireNonNullElse(queryParams, Map.of()))
-					.headers(headers) // TODO ver si hacer el requireNonNullElse
+					.headers(Objects.requireNonNullElse(headers, Map.of()))
 					.asString();
 			return new HttpResponse(response.getBody(), response.getStatus());
 		} catch (final Exception e) {

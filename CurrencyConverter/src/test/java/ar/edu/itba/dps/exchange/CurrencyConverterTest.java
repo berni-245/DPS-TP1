@@ -118,19 +118,17 @@ class CurrencyConverterTest {
 		final var provider = mock(CurrencyRateProvider.class);
 		final var targets = List.of(USD, EUR);
 		final var date = LocalDate.of(2022, 1, 1);
-		final var measurementTime = LocalTime.of(23, 59, 59);
 		when(provider.getHistoricalCurrencyRates(ARS, targets, date))
 				.thenReturn(List.of(
 						new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE)),
 						new TargetCurrencyRate(EUR, new CurrencyRate(BigDecimal.valueOf(0.85)))));
-		when(provider.getDailyTimeOfRateMeasurement()).thenReturn(measurementTime);
 		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
 
 		// When
 		final var results = converter.convert(new Money(ARS, BigDecimal.valueOf(100)), targets, date);
 
 		// Then
-		final var expectedTimestamp = date.atTime(measurementTime).toInstant(ZoneOffset.UTC);
+		final var expectedTimestamp = date.atStartOfDay().toInstant(ZoneOffset.UTC);
 		assertThat(results, hasSize(2));
 		assertThat(results.get(0).source().currency(), is(ARS));
 		assertThat(results.get(1).source().currency(), is(ARS));

@@ -15,7 +15,6 @@ public class CurrencyConverter {
 	private final CurrencyRateProvider currencyRateProvider;
 	private final Clock clock;
 
-	// TODO borrar para sacar tests
 	public CurrencyConversionResponse convert(final Money money, final Currency to) {
 		return convert(money, List.of(to)).getFirst();
 	}
@@ -25,7 +24,6 @@ public class CurrencyConverter {
 		return toResponses(money, targetRates, Instant.now(clock));
 	}
 
-    // TODO quitar este método ya que tenemos de una a varias en otro método
     public CurrencyRateResponse getCurrencyRate(final Currency from, final Currency to) {
 		final var targetRate = this.currencyRateProvider.getCurrencyRates(from, List.of(to)).getFirst();
 		return new CurrencyRateResponse(from, targetRate.target(), targetRate.currencyRate(), Instant.now(clock));
@@ -37,8 +35,7 @@ public class CurrencyConverter {
 
 	public List<CurrencyConversionResponse> convert(final Money money, final List<Currency> to, final LocalDate date) {
 		final var targetRates = this.currencyRateProvider.getHistoricalCurrencyRates(money.currency(), to, date);
-		final var timestamp = date.atTime(this.currencyRateProvider.getDailyTimeOfRateMeasurement())
-				.toInstant(ZoneOffset.UTC);
+		final var timestamp = date.atStartOfDay().toInstant(ZoneOffset.UTC);
 		return toResponses(money, targetRates, timestamp);
 	}
 

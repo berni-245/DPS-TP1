@@ -8,13 +8,15 @@ import java.util.Optional;
  */
 public final class CurrencyRateRemoteException extends CurrencyRateProviderException {
 
+	private static final int RESPONSE_DETAIL_MAX_LEN = 256;
 	private final int statusCode;
 	private final String responseDetail;
 
-	public CurrencyRateRemoteException(final int statusCode, final String responseDetail) {
-		super(buildMessage(statusCode, responseDetail));
+	public CurrencyRateRemoteException(final int statusCode, final String body) {
+		String sanitizedBody = sanitizeBody(body);
+		super(buildMessage(statusCode, sanitizedBody));
 		this.statusCode = statusCode;
-		this.responseDetail = responseDetail == null ? "" : responseDetail;
+		this.responseDetail = sanitizedBody;
 	}
 
 	public int statusCode() {
@@ -33,5 +35,17 @@ public final class CurrencyRateRemoteException extends CurrencyRateProviderExcep
 				? ""
 				: " — " + responseDetail;
 		return "Currency service returned status " + statusCode + detail;
+	}
+
+	private static String sanitizeBody(final String body) {
+		if (body == null || body.isBlank()) {
+			return "";
+		}
+
+		String s = body.strip().replace('\n', ' ').replace('\r', ' ');
+		if (s.length() > RESPONSE_DETAIL_MAX_LEN) {
+			s = s.substring(0, RESPONSE_DETAIL_MAX_LEN) + "…";
+		}
+		return s;
 	}
 }

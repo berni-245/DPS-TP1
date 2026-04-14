@@ -44,8 +44,6 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 			"apikey", API_KEY
 	);
 
-	private static final int RESPONSE_DETAIL_MAX_LEN = 256;
-
 	private final HttpClient httpClient;
 	private final String baseUrl;
 
@@ -95,38 +93,17 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 				.toList();
 	}
 
-	@Override
-	public LocalTime getDailyTimeOfRateMeasurement() {
-		return LocalTime.of(23, 59, 59);
-	}
-
 	private <T> T parseJson(final HttpResponse response, final Class<T> type) {
 		if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-			final String excerpt = sanitizeResponseExcerpt(response.body());
-			LOG.warn("Currency service returned HTTP {}: {}", response.statusCode(), excerpt);
-			throw new CurrencyRateRemoteException(response.statusCode(), excerpt);
+			LOG.warn("Currency service returned HTTP {} status error", response.statusCode());
+			throw new CurrencyRateRemoteException(response.statusCode(), response.body());
 		}
 		try {
 			return GSON.fromJson(response.body(), type);
 		} catch (final JsonSyntaxException e) {
-			final String excerpt = sanitizeResponseExcerpt(response.body());
-			LOG.warn("Currency service response is not valid JSON: {}", excerpt, e);
+			LOG.warn("Currency service response is not valid JSON");
 			throw new CurrencyRateNotAvailableException("Could not parse currency service response", e);
 		}
-	}
-
-	// TODO ver por qué es package private
-	static String sanitizeResponseExcerpt(final String body) {
-		if (body == null || body.isBlank()) {
-			return "";
-		}
-		// TODO por qué hacemos esto? Estamos mezclando niveles de abstracción tal vez? No haría falta un
-		// TODO json parser o ver si gson tiene algo para esto?
-		String s = body.strip().replace('\n', ' ').replace('\r', ' ');
-		if (s.length() > RESPONSE_DETAIL_MAX_LEN) {
-			s = s.substring(0, RESPONSE_DETAIL_MAX_LEN) + "…";
-		}
-		return s;
 	}
 
 	private HttpResponse executeGet(final URI url, final Map<String, Object> queryParams) {

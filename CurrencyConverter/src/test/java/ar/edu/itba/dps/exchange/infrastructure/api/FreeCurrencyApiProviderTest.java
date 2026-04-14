@@ -75,14 +75,6 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void sanitizeResponseExcerpt_truncatesLongBody() {
-		final String longBody = "x".repeat(400);
-		final String excerpt = FreeCurrencyApiProvider.sanitizeResponseExcerpt(longBody);
-		assertThat(excerpt.length(), lessThanOrEqualTo(258));
-		assertThat(excerpt, endsWith("…"));
-	}
-
-	@Test
 	void singleArgConstructor_usesDefaultBaseUrl() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any())).thenReturn(
@@ -120,24 +112,6 @@ class FreeCurrencyApiProviderTest {
 
 		assertThrows(CurrencyRateNotAvailableException.class,
 				() -> provider.getCurrencyRates(EUR, List.of(USD)));
-	}
-
-	@Test
-	void getDailyTimeOfRateMeasurement_isEndOfServiceDay() {
-		final var http = mock(HttpClient.class);
-		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
-
-		assertThat(provider.getDailyTimeOfRateMeasurement(), is(LocalTime.of(23, 59, 59)));
-	}
-
-	@Test
-	void sanitizeResponseExcerpt_blankBody_returnsEmpty() {
-		assertThat(FreeCurrencyApiProvider.sanitizeResponseExcerpt("   \n"), is(""));
-	}
-
-	@Test
-	void sanitizeResponseExcerpt_nullBody_returnsEmpty() {
-		assertThat(FreeCurrencyApiProvider.sanitizeResponseExcerpt(null), is(""));
 	}
 
 	@Test
