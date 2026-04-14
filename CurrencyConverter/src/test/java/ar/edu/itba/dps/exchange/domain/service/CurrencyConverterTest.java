@@ -25,7 +25,7 @@ class CurrencyConverterTest {
 	public static final Currency EUR = Currency.getInstance("EUR");
 
 	@Test
-	void testConvert() {
+	void convertSingleCurrency() {
 		final var provider = mock(CurrencyRateProvider.class);
 		when(provider.getCurrencyRates(eq(ARS), argThat(l -> l.equals(List.of(USD)))))
 				.thenReturn(List.of(new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE))));
@@ -44,7 +44,7 @@ class CurrencyConverterTest {
 	}
 
 	@Test
-	void testConvertToMultipleCurrencies() {
+	void convertToMultipleCurrencies() {
 		final var provider = mock(CurrencyRateProvider.class);
 		final var targets = List.of(USD, EUR);
 		when(provider.getCurrencyRates(ARS, targets))
@@ -73,7 +73,7 @@ class CurrencyConverterTest {
 	}
 
 	@Test
-	void testGetExchangeRate() {
+	void getCurrencyRateBetweenTwoCurrencies() {
 		final var provider = mock(CurrencyRateProvider.class);
 		when(provider.getCurrencyRates(eq(ARS), argThat(l -> l.equals(List.of(USD)))))
 				.thenReturn(List.of(new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE))));
@@ -90,7 +90,7 @@ class CurrencyConverterTest {
 	}
 
 	@Test
-	void testGetSupportedCurrencies() {
+	void getSupportedCurrencies() {
 		final var provider = mock(CurrencyRateProvider.class);
 		final var expectedCurrencies = List.of(USD, ARS);
 		when(provider.getAvailableCurrencies()).thenReturn(expectedCurrencies);
@@ -102,7 +102,7 @@ class CurrencyConverterTest {
 	}
 
 	@Test
-	void convert_whenNoTargetCurrencies_returnsEmptyList() {
+	void convertWhenNoTargetCurrenciesReturnsEmptyList() {
 		final var provider = mock(CurrencyRateProvider.class);
 		when(provider.getCurrencyRates(eq(ARS), argThat(List::isEmpty))).thenReturn(List.of());
 		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
@@ -113,7 +113,7 @@ class CurrencyConverterTest {
 	}
 
 	@Test
-	void testConvertToMultipleCurrenciesOnDate() {
+	void convertToMultipleCurrenciesOnDate() {
 		final var provider = mock(CurrencyRateProvider.class);
 		final var targets = List.of(USD, EUR);
 		final var date = LocalDate.of(2022, 1, 1);

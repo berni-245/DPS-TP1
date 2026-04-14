@@ -12,14 +12,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ExchangeRateResponseTest {
 
 	@Test
-	void getExchange_whenDataNull_throws() {
+	void getExchangeWhenDataNullThrows() {
 		final var r = new ExchangeRateResponse(null);
 		final var ex = assertThrows(IllegalStateException.class, () -> r.getExchange("USD"));
 		assertThat(ex.getMessage(), containsString("exchange data"));
 	}
 
 	@Test
-	void getExchange_whenCurrencyMissing_throws() {
+	void getExchangeWhenCurrencyMissingThrows() {
 		final var r = new ExchangeRateResponse(Map.of("EUR", BigDecimal.ONE));
 		final var ex = assertThrows(IllegalStateException.class, () -> r.getExchange("USD"));
 		assertThat(ex.getMessage(), containsString("USD"));

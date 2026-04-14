@@ -31,7 +31,7 @@ class FreeCurrencyApiProviderTest {
 	private static final Currency USD = Currency.getInstance("USD");
 
 	@Test
-	void getCurrencyRates_transportFailure_throwsTransportException() {
+	void getCurrencyRatesTransportFailureThrowsTransportException() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any()))
 				.thenThrow(new HttpTransportException("timeout", new RuntimeException("simulated")));
@@ -45,7 +45,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void historicalHttp404_throwsRemoteExceptionWithStatus() {
+	void historicalHttp404ThrowsRemoteExceptionWithStatus() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any())).thenReturn(
 				new HttpResponse("{\"message\":\"Not Found\"}", 404));
@@ -60,7 +60,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void getAvailableCurrencies_invalidJson_throwsNotAvailable() {
+	void getAvailableCurrenciesInvalidJsonThrowsNotAvailable() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any())).thenReturn(new HttpResponse("not-json", 200));
 		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
@@ -69,7 +69,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void getHistoricalCurrencyRates_invalidJson_throwsNotAvailable() {
+	void getHistoricalCurrencyRatesInvalidJsonThrowsNotAvailable() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any())).thenReturn(new HttpResponse("not-json", 200));
 		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
@@ -79,7 +79,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void http404_throwsRemoteExceptionWithStatus() {
+	void http404ThrowsRemoteExceptionWithStatus() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any())).thenReturn(
 				new HttpResponse("{\"message\":\"Not Found\"}", 404));
@@ -94,7 +94,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void http500_throwsRemoteExceptionWithStatus() {
+	void http500ThrowsRemoteExceptionWithStatus() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any())).thenReturn(
 				new HttpResponse("Internal Error", 500));
@@ -108,7 +108,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void transportFailure_throwsTransportException() {
+	void transportFailureThrowsTransportException() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any()))
 				.thenThrow(new HttpTransportException("timeout", new RuntimeException("simulated")));
@@ -122,7 +122,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void singleArgConstructor_usesDefaultBaseUrl() {
+	void singleArgConstructorUsesDefaultBaseUrl() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any())).thenReturn(
 				new HttpResponse("{\"data\":{\"USD\":1.08}}", 200));
@@ -137,7 +137,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void baseUrlWithoutTrailingSlash_isNormalized() {
+	void baseUrlWithoutTrailingSlashIsNormalized() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any())).thenReturn(
 				new HttpResponse("{\"data\":{\"USD\":1}}", 200));
@@ -152,7 +152,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void invalidJson200_throwsNotAvailable() {
+	void invalidJson200ThrowsNotAvailable() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any())).thenReturn(new HttpResponse("not-json", 200));
 		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
@@ -162,7 +162,7 @@ class FreeCurrencyApiProviderTest {
 	}
 
 	@Test
-	void latest_ok_usesCorrectQueryParams() {
+	void latestOkUsesCorrectQueryParams() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), eq(Map.of("base_currency", "EUR", "currencies", "USD")), any()))
 				.thenReturn(new HttpResponse(

@@ -8,13 +8,13 @@ import static org.hamcrest.Matchers.is;
 class CurrencyRateNotAvailableExceptionTest {
 
 	@Test
-	void noArgConstructor_setsDefaultMessage() {
+	void noArgConstructorSetsDefaultMessage() {
 		final var ex = new CurrencyRateNotAvailableException();
 		assertThat(ex.getMessage(), is("Currency rate is not available"));
 	}
 
 	@Test
-	void messageConstructor_preservesCause() {
+	void messageConstructorPreservesCause() {
 		final var cause = new RuntimeException("x");
 		final var ex = new CurrencyRateNotAvailableException("custom", cause);
 		assertThat(ex.getMessage(), is("custom"));

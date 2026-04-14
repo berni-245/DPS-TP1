@@ -11,19 +11,19 @@ import static org.hamcrest.Matchers.*;
 class AvailableCurrenciesResponseTest {
 
 	@Test
-	void getCurrencies_whenDataNull_returnsEmpty() {
+	void getCurrenciesWhenDataNullReturnsEmpty() {
 		final var r = new AvailableCurrenciesResponse(null);
 		assertThat(r.getCurrencies(), empty());
 	}
 
 	@Test
-	void getCurrencies_whenDataEmpty_returnsEmpty() {
+	void getCurrenciesWhenDataEmptyReturnsEmpty() {
 		final var r = new AvailableCurrenciesResponse(Map.of());
 		assertThat(r.getCurrencies(), empty());
 	}
 
 	@Test
-	void getCurrencies_returnsKeysAsCurrency() {
+	void getCurrenciesReturnsKeysAsCurrency() {
 		final var r = new AvailableCurrenciesResponse(Map.of(
 				"USD", new AvailableCurrenciesResponse.CurrencyDetail(
 						"$", "US Dollar", "$", 2, 0, "USD", "US dollars")));

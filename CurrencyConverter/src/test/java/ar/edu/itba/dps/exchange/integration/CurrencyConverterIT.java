@@ -33,7 +33,7 @@ class CurrencyConverterIT {
 			.build();
 
 	@Test
-	void convert_currentRates_includesTimestampSourceTargetAndQuotedRate() {
+	void convertCurrentRatesIncludesTimestampSourceTargetAndQuotedRate() {
 		final var fixedInstant = Instant.parse("2026-04-01T12:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var httpClient = new UnirestHttpClient();
@@ -51,7 +51,7 @@ class CurrencyConverterIT {
 	}
 
 	@Test
-	void convert_historicalRates_usesDateStartAsTimestamp() {
+	void convertHistoricalRatesUsesDateStartAsTimestamp() {
 		final var clock = Clock.systemUTC();
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");

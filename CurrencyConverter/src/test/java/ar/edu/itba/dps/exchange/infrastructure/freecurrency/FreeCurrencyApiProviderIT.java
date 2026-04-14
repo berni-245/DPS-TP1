@@ -25,7 +25,7 @@ class FreeCurrencyApiProviderIT {
 			.build();
 
 	@Test
-	void testGetAvailableCurrencies() {
+	void getAvailableCurrencies() {
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
 
@@ -37,7 +37,7 @@ class FreeCurrencyApiProviderIT {
 	}
 
 	@Test
-	void testGetHistoricalCurrencyRate() {
+	void getHistoricalCurrencyRate() {
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
 		final var date = LocalDate.of(2022, 1, 1);
@@ -49,7 +49,7 @@ class FreeCurrencyApiProviderIT {
 	}
 
 	@Test
-	void testGetHistoricalCurrencyRates() {
+	void getHistoricalCurrencyRates() {
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
 		final var date = LocalDate.of(2022, 1, 1);
@@ -64,7 +64,7 @@ class FreeCurrencyApiProviderIT {
 	}
 
 	@Test
-	void testGetCurrencyRate() {
+	void getCurrencyRate() {
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
 
@@ -75,7 +75,7 @@ class FreeCurrencyApiProviderIT {
 	}
 
 	@Test
-	void testGetCurrencyRates() {
+	void getCurrencyRates() {
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
 

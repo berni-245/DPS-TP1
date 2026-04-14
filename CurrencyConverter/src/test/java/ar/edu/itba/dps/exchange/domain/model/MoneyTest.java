@@ -15,7 +15,7 @@ class MoneyTest {
 	private static final Currency EUR = Currency.getInstance("EUR");
 
 	@Test
-	void convert_multipliesAmountByRateAndUsesTargetCurrency() {
+	void convertMultipliesAmountByRateAndUsesTargetCurrency() {
 		final var money = new Money(USD, new BigDecimal("10"));
 		final var line = new TargetCurrencyRate(EUR, new CurrencyRate(new BigDecimal("0.9")));
 

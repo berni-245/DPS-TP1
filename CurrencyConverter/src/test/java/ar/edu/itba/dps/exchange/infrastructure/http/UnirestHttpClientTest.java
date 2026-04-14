@@ -39,7 +39,7 @@ class UnirestHttpClientTest {
 	}
 
 	@Test
-	void nullQueryParams_defaultsToEmptyMap() {
+	void nullQueryParamsDefaultsToEmptyMap() {
 		wireMock.stubFor(get(urlPathEqualTo("/q"))
 				.willReturn(aResponse().withStatus(200).withBody("ok")));
 
@@ -65,7 +65,7 @@ class UnirestHttpClientTest {
 	}
 
 	@Test
-	void connectionRefused_throwsHttpTransportException() throws Exception {
+	void connectionRefusedThrowsHttpTransportException() throws Exception {
 		final int closedPort;
 		try (ServerSocket ss = new ServerSocket(0)) {
 			closedPort = ss.getLocalPort();

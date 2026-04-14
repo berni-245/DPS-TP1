@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class HistoricalExchangeRateResponseTest {
 
 	@Test
-	void getExchange_whenDataNull_throws() {
+	void getExchangeWhenDataNullThrows() {
 		final var r = new HistoricalExchangeRateResponse(null);
 		final var ex = assertThrows(IllegalStateException.class,
 				() -> r.getExchange("2022-01-01", "USD"));
@@ -20,7 +20,7 @@ class HistoricalExchangeRateResponseTest {
 	}
 
 	@Test
-	void getExchange_whenDateMissing_throws() {
+	void getExchangeWhenDateMissingThrows() {
 		final var r = new HistoricalExchangeRateResponse(Map.of());
 		final var ex = assertThrows(IllegalStateException.class,
 				() -> r.getExchange("2022-01-01", "USD"));
@@ -28,7 +28,7 @@ class HistoricalExchangeRateResponseTest {
 	}
 
 	@Test
-	void getExchange_whenCurrencyMissing_throws() {
+	void getExchangeWhenCurrencyMissingThrows() {
 		final var r = new HistoricalExchangeRateResponse(
 				Map.of("2022-01-01", Map.of("EUR", BigDecimal.ONE)));
 		final var ex = assertThrows(IllegalStateException.class,

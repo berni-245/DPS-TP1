@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class CurrencyRateRemoteExceptionTest {
 
 	@Test
-	void nullResponseDetail_normalizesToEmptyOptionalAndMessageWithoutSuffix() {
+	void nullResponseDetailNormalizesToEmptyOptionalAndMessageWithoutSuffix() {
 		final var ex = new CurrencyRateRemoteException(502, null);
 		assertThat(ex.statusCode(), is(502));
 		assertFalse(ex.responseDetail().isPresent());
@@ -19,19 +19,19 @@ class CurrencyRateRemoteExceptionTest {
 	}
 
 	@Test
-	void blankResponseDetail_messageOmitsDetailSuffix() {
+	void blankResponseDetailMessageOmitsDetailSuffix() {
 		final var ex = new CurrencyRateRemoteException(503, "   ");
 		assertThat(ex.getMessage(), is("Currency service returned status 503"));
 	}
 
 	@Test
-	void emptyResponseDetail_optionalEmpty() {
+	void emptyResponseDetailOptionalEmpty() {
 		final var ex = new CurrencyRateRemoteException(503, "");
 		assertFalse(ex.responseDetail().isPresent());
 	}
 
 	@Test
-	void nonBlankResponseDetail_includesInMessageAndOptional() {
+	void nonBlankResponseDetailIncludesInMessageAndOptional() {
 		final var ex = new CurrencyRateRemoteException(404, "oops");
 		assertThat(ex.responseDetail(), is(Optional.of("oops")));
 		assertThat(ex.getMessage(), containsString("404"));
@@ -39,7 +39,7 @@ class CurrencyRateRemoteExceptionTest {
 	}
 
 	@Test
-	void longResponseBody_isTruncatedWithEllipsis() {
+	void longResponseBodyIsTruncatedWithEllipsis() {
 		final String longBody = "x".repeat(300);
 		final var ex = new CurrencyRateRemoteException(500, longBody);
 		assertThat(ex.responseDetail().isPresent(), is(true));
