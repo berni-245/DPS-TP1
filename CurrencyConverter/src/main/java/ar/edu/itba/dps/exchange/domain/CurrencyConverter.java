@@ -46,7 +46,15 @@ public class CurrencyConverter {
 	                                                              final List<TargetCurrencyRate> targetRates,
 	                                                              final Instant timestamp) {
 		return targetRates.stream()
-				.map(t -> new CurrencyConversionResponse(money, t, timestamp))
+				.map(t -> {
+					final var currencyRate = t.currencyRate();
+					final var r = currencyRate.rate();
+					return new CurrencyConversionResponse(
+							money,
+							new Money(t.target(), money.amount().multiply(r)),
+							currencyRate,
+							timestamp);
+				})
 				.toList();
 	}
 }
