@@ -1,5 +1,7 @@
 package ar.edu.itba.dps.exchange.main;
 
+import ar.edu.itba.dps.exchange.domain.model.ConverterFailure;
+import ar.edu.itba.dps.exchange.domain.model.CurrencyConversionResult;
 import ar.edu.itba.dps.exchange.domain.model.Money;
 import ar.edu.itba.dps.exchange.domain.service.CurrencyConverter;
 import ar.edu.itba.dps.exchange.infrastructure.freecurrency.FreeCurrencyApiProvider;
@@ -20,7 +22,19 @@ public final class Main {
 			final var httpClient = new UnirestHttpClient();
 			final var provider = new FreeCurrencyApiProvider(httpClient);
 			final var converter = new CurrencyConverter(provider, Clock.systemUTC());
-			LOG.info("{}", converter.convert(new Money(Currency.getInstance("EUR"), BigDecimal.valueOf(100)), Currency.getInstance("USD")));
+			switch (converter.convert(new Money(Currency.getInstance("EUR"), BigDecimal.valueOf(100)),
+					Currency.getInstance("USD"))) {
+				case CurrencyConversionResult.Success s -> LOG.info("{}", s.conversion());
+				case CurrencyConversionResult.Failure f -> {
+					switch (f.reason()) {
+						case ConverterFailure.ProviderError e ->
+								LOG.error("Conversion demo failed: provider error", e.exception());
+						case ConverterFailure.NoRatesAvailable() ->
+								LOG.error("Conversion demo failed: no rate available");
+					}
+					System.exit(1);
+				}
+			}
 		} catch (final RuntimeException e) {
 			LOG.error("Conversion demo failed", e);
 			System.exit(1);

@@ -1,5 +1,8 @@
 package ar.edu.itba.dps.exchange.integration;
 
+import ar.edu.itba.dps.exchange.domain.model.CurrencyConversionResponse;
+import ar.edu.itba.dps.exchange.domain.model.CurrencyConversionsResult;
+import ar.edu.itba.dps.exchange.domain.model.CurrencyConversionResult;
 import ar.edu.itba.dps.exchange.domain.model.Money;
 import ar.edu.itba.dps.exchange.domain.service.CurrencyConverter;
 import ar.edu.itba.dps.exchange.infrastructure.freecurrency.FreeCurrencyApiProvider;
@@ -67,7 +70,10 @@ class CurrencyConverterIT {
 		final var provider = new FreeCurrencyApiProvider(httpClient, wiremockV1BaseUrl());
 		final var converter = new CurrencyConverter(provider, clock);
 
-		final var response = converter.convert(new Money(EUR, SOURCE_AMOUNT), USD);
+		final CurrencyConversionResponse response = switch (converter.convert(new Money(EUR, SOURCE_AMOUNT), USD)) {
+			case CurrencyConversionResult.Success s -> s.conversion();
+			case CurrencyConversionResult.Failure f -> throw new AssertionError(f.reason());
+		};
 
 		assertEquals(EUR, response.source().currency());
 		assertBigDecimalEquals(SOURCE_AMOUNT, response.source().amount());
@@ -85,8 +91,11 @@ class CurrencyConverterIT {
 		final var converter = new CurrencyConverter(provider, clock);
 		final var expectedTs = HISTORICAL_DATE.atStartOfDay().toInstant(ZoneOffset.UTC);
 
-		final var response = converter.convert(new Money(EUR, SOURCE_AMOUNT), List.of(USD), HISTORICAL_DATE)
-				.get(FIRST_RESULT_INDEX);
+		final CurrencyConversionResponse response = switch (converter.convert(
+				new Money(EUR, SOURCE_AMOUNT), List.of(USD), HISTORICAL_DATE)) {
+			case CurrencyConversionsResult.Success s -> s.conversions().get(FIRST_RESULT_INDEX);
+			case CurrencyConversionsResult.Failure f -> throw new AssertionError(f.reason());
+		};
 
 		assertBigDecimalEquals(HISTORICAL_TARGET_AMOUNT, response.target().amount());
 		assertBigDecimalEquals(HISTORICAL_RATE, response.rate().rate());
