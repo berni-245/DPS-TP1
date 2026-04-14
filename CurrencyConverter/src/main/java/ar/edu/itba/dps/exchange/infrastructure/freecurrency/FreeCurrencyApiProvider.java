@@ -30,7 +30,7 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 	private static final Logger LOG = LogManager.getLogger(FreeCurrencyApiProvider.class);
 	private static final Gson GSON = new Gson();
 
-	private static final String API_KEY = "fca_live_JA6vg6L8PJQe85FIp4ohUOdZgUn6LjQ42sS07OAB";
+	private static final String API_KEY = "fca_live_aub561qZcfYHFgm3lh0uCAOL8QDBz4sFWhYn69qm";
 	private static final String DEFAULT_BASE_URL = "https://api.freecurrencyapi.com/v1/";
 
 	private static final String ENDPOINT_LATEST = "latest";

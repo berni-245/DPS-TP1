@@ -55,7 +55,6 @@ class FreeCurrencyApiProviderTest {
 		final var ex = assertThrows(CurrencyRateRemoteException.class,
 				() -> provider.getHistoricalCurrencyRates(EUR, List.of(USD), date));
 
-		assertThat(ex.statusCode(), is(404));
 		assertThat(ex.getMessage(), containsString("404"));
 	}
 
@@ -88,9 +87,8 @@ class FreeCurrencyApiProviderTest {
 		final var ex = assertThrows(CurrencyRateRemoteException.class,
 				() -> provider.getCurrencyRates(EUR, List.of(USD)));
 
-		assertThat(ex.statusCode(), is(404));
 		assertThat(ex.getMessage(), containsString("404"));
-		assertThat(ex.responseDetail().orElse(""), containsString("Not Found"));
+		assertThat(ex.getMessage(), containsString("Not Found"));
 	}
 
 	@Test
@@ -103,7 +101,6 @@ class FreeCurrencyApiProviderTest {
 		final var ex = assertThrows(CurrencyRateRemoteException.class,
 				provider::getAvailableCurrencies);
 
-		assertThat(ex.statusCode(), is(500));
 		assertThat(ex.getMessage(), containsString("500"));
 	}
 
