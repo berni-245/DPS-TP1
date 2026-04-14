@@ -1,8 +1,8 @@
 package ar.edu.itba.dps.exchange.main;
 
-import ar.edu.itba.dps.exchange.domain.CurrencyConverter;
-import ar.edu.itba.dps.exchange.domain.Money;
-import ar.edu.itba.dps.exchange.infrastructure.api.FreeCurrencyApiProvider;
+import ar.edu.itba.dps.exchange.domain.model.Money;
+import ar.edu.itba.dps.exchange.domain.service.CurrencyConverter;
+import ar.edu.itba.dps.exchange.infrastructure.freecurrency.FreeCurrencyApiProvider;
 import ar.edu.itba.dps.exchange.infrastructure.http.UnirestHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

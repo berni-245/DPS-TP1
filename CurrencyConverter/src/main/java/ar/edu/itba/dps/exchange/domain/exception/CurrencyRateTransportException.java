@@ -1,4 +1,4 @@
-package ar.edu.itba.dps.exchange.domain;
+package ar.edu.itba.dps.exchange.domain.exception;
 
 /**
  * The currency rate service could not be reached (network error, timeout, etc.).

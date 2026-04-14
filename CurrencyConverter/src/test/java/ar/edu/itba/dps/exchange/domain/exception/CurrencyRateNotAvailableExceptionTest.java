@@ -1,9 +1,9 @@
-package ar.edu.itba.dps.exchange.domain;
+package ar.edu.itba.dps.exchange.domain.exception;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 class CurrencyRateNotAvailableExceptionTest {
 

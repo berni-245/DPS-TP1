@@ -1,8 +1,8 @@
-package ar.edu.itba.dps.exchange.infrastructure.api;
+package ar.edu.itba.dps.exchange.infrastructure.freecurrency;
 
-import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailableException;
-import ar.edu.itba.dps.exchange.domain.CurrencyRateRemoteException;
-import ar.edu.itba.dps.exchange.domain.CurrencyRateTransportException;
+import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateNotAvailableException;
+import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateRemoteException;
+import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateTransportException;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpClient;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpResponse;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpTransportException;

@@ -1,4 +1,4 @@
-package ar.edu.itba.dps.exchange.infrastructure.api;
+package ar.edu.itba.dps.exchange.infrastructure.freecurrency.dto;
 
 import org.junit.jupiter.api.Test;
 

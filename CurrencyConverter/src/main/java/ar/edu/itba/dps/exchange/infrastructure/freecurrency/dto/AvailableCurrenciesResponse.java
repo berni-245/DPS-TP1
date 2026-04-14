@@ -1,4 +1,4 @@
-package ar.edu.itba.dps.exchange.infrastructure.api;
+package ar.edu.itba.dps.exchange.infrastructure.freecurrency.dto;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -6,9 +6,9 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
-record AvailableCurrenciesResponse(Map<String, CurrencyDetail> data) {
+public record AvailableCurrenciesResponse(Map<String, CurrencyDetail> data) {
 
-	List<Currency> getCurrencies() {
+	public List<Currency> getCurrencies() {
 		if (this.data == null || this.data.isEmpty()) {
 			return List.of();
 		}
@@ -17,7 +17,7 @@ record AvailableCurrenciesResponse(Map<String, CurrencyDetail> data) {
 				.toList();
 	}
 
-	record CurrencyDetail(
+	public record CurrencyDetail(
 			String symbol,
 			String name,
 			@SerializedName("symbol_native") String symbolNative,

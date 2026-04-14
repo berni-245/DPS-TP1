@@ -1,11 +1,11 @@
-package ar.edu.itba.dps.exchange.infrastructure.api;
+package ar.edu.itba.dps.exchange.infrastructure.freecurrency.dto;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
-record HistoricalExchangeRateResponse(Map<String, Map<String, BigDecimal>> data) {
+public record HistoricalExchangeRateResponse(Map<String, Map<String, BigDecimal>> data) {
 
-	BigDecimal getExchange(String dateIso, String toCurrency) {
+	public BigDecimal getExchange(final String dateIso, final String toCurrency) {
 		if (this.data == null) {
 			throw new IllegalStateException("Missing exchange data");
 		}

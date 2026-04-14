@@ -1,11 +1,14 @@
-package ar.edu.itba.dps.exchange.infrastructure.api;
+package ar.edu.itba.dps.exchange.infrastructure.freecurrency;
 
-import ar.edu.itba.dps.exchange.domain.CurrencyRate;
-import ar.edu.itba.dps.exchange.domain.TargetCurrencyRate;
-import ar.edu.itba.dps.exchange.domain.CurrencyRateNotAvailableException;
-import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
-import ar.edu.itba.dps.exchange.domain.CurrencyRateRemoteException;
-import ar.edu.itba.dps.exchange.domain.CurrencyRateTransportException;
+import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateNotAvailableException;
+import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateRemoteException;
+import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateTransportException;
+import ar.edu.itba.dps.exchange.domain.model.CurrencyRate;
+import ar.edu.itba.dps.exchange.domain.model.TargetCurrencyRate;
+import ar.edu.itba.dps.exchange.domain.port.CurrencyRateProvider;
+import ar.edu.itba.dps.exchange.infrastructure.freecurrency.dto.AvailableCurrenciesResponse;
+import ar.edu.itba.dps.exchange.infrastructure.freecurrency.dto.ExchangeRateResponse;
+import ar.edu.itba.dps.exchange.infrastructure.freecurrency.dto.HistoricalExchangeRateResponse;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpClient;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpResponse;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpTransportException;
@@ -17,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +112,6 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 		try {
 			return this.httpClient.get(url, queryParams, JSON_REQUEST_HEADERS);
 		} catch (final HttpTransportException e) {
-			// TODO ver el nombre
 			throw new CurrencyRateTransportException("Failed to contact currency service", e);
 		}
 	}

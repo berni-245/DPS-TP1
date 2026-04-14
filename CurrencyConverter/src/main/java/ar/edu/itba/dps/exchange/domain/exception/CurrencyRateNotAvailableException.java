@@ -1,4 +1,4 @@
-package ar.edu.itba.dps.exchange.domain;
+package ar.edu.itba.dps.exchange.domain.exception;
 
 /**
  * A currency rate could not be obtained from an otherwise successful response (e.g. invalid payload).

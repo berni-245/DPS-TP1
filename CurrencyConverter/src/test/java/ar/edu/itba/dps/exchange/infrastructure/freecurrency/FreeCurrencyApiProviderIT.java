@@ -1,4 +1,4 @@
-package ar.edu.itba.dps.exchange.infrastructure.api;
+package ar.edu.itba.dps.exchange.infrastructure.freecurrency;
 
 import ar.edu.itba.dps.exchange.infrastructure.http.UnirestHttpClient;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -26,14 +26,11 @@ class FreeCurrencyApiProviderIT {
 
 	@Test
 	void testGetAvailableCurrencies() {
-		// Given
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
 
-		// When
 		final var currencies = provider.getAvailableCurrencies();
 
-		// Then
 		Assertions.assertEquals(2, currencies.size());
 		Assertions.assertTrue(currencies.contains(USD));
 		Assertions.assertTrue(currencies.contains(EUR));
@@ -53,15 +50,12 @@ class FreeCurrencyApiProviderIT {
 
 	@Test
 	void testGetHistoricalCurrencyRates() {
-		// Given
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
 		final var date = LocalDate.of(2022, 1, 1);
 
-		// When
 		final var rates = provider.getHistoricalCurrencyRates(EUR, List.of(USD, CAD), date);
 
-		// Then
 		Assertions.assertEquals(2, rates.size());
 		Assertions.assertEquals(USD, rates.get(0).target());
 		Assertions.assertEquals(CAD, rates.get(1).target());
@@ -71,26 +65,22 @@ class FreeCurrencyApiProviderIT {
 
 	@Test
 	void testGetCurrencyRate() {
-		// Given
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
-		// When
+
 		final var targetRate = provider.getCurrencyRates(EUR, List.of(USD)).getFirst();
 
-		// Then
 		Assertions.assertEquals(USD, targetRate.target());
 		Assertions.assertEquals(BigDecimal.valueOf(1.0847), targetRate.currencyRate().rate());
 	}
 
 	@Test
 	void testGetCurrencyRates() {
-		// Given
 		final var httpClient = new UnirestHttpClient();
 		final var provider = new FreeCurrencyApiProvider(httpClient, wireMock.baseUrl() + "/v1/");
-		// When
+
 		final var rates = provider.getCurrencyRates(EUR, List.of(USD, CAD));
 
-		// Then
 		Assertions.assertEquals(2, rates.size());
 		Assertions.assertEquals(USD, rates.get(0).target());
 		Assertions.assertEquals(CAD, rates.get(1).target());

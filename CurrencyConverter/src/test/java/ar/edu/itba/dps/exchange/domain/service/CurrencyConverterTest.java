@@ -1,10 +1,9 @@
-package ar.edu.itba.dps.exchange;
+package ar.edu.itba.dps.exchange.domain.service;
 
-import ar.edu.itba.dps.exchange.domain.CurrencyConverter;
-import ar.edu.itba.dps.exchange.domain.Money;
-import ar.edu.itba.dps.exchange.domain.CurrencyRate;
-import ar.edu.itba.dps.exchange.domain.TargetCurrencyRate;
-import ar.edu.itba.dps.exchange.domain.CurrencyRateProvider;
+import ar.edu.itba.dps.exchange.domain.model.CurrencyRate;
+import ar.edu.itba.dps.exchange.domain.model.Money;
+import ar.edu.itba.dps.exchange.domain.model.TargetCurrencyRate;
+import ar.edu.itba.dps.exchange.domain.port.CurrencyRateProvider;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -14,6 +13,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,18 +26,15 @@ class CurrencyConverterTest {
 
 	@Test
 	void testConvert() {
-		// Given
 		final var provider = mock(CurrencyRateProvider.class);
-		when(provider.getCurrencyRates(eq(ARS), eq(List.of(USD))))
+		when(provider.getCurrencyRates(eq(ARS), argThat(l -> l.equals(List.of(USD)))))
 				.thenReturn(List.of(new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE))));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
 
-		// When
 		final var result = converter.convert(new Money(ARS, BigDecimal.valueOf(100)), USD);
 
-		// Then
 		assertThat(result.source().currency(), is(ARS));
 		assertThat(result.source().amount(), comparesEqualTo(BigDecimal.valueOf(100.0)));
 		assertThat(result.target().currency(), is(USD));
@@ -48,7 +45,6 @@ class CurrencyConverterTest {
 
 	@Test
 	void testConvertToMultipleCurrencies() {
-		// Given
 		final var provider = mock(CurrencyRateProvider.class);
 		final var targets = List.of(USD, EUR);
 		when(provider.getCurrencyRates(ARS, targets))
@@ -59,10 +55,8 @@ class CurrencyConverterTest {
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
 
-		// When
 		final var results = converter.convert(new Money(ARS, BigDecimal.valueOf(100)), targets);
 
-		// Then
 		assertThat(results, hasSize(2));
 		assertThat(results.get(0).source().currency(), is(ARS));
 		assertThat(results.get(1).source().currency(), is(ARS));
@@ -80,18 +74,15 @@ class CurrencyConverterTest {
 
 	@Test
 	void testGetExchangeRate() {
-		// Given
 		final var provider = mock(CurrencyRateProvider.class);
-		when(provider.getCurrencyRates(eq(ARS), eq(List.of(USD))))
+		when(provider.getCurrencyRates(eq(ARS), argThat(l -> l.equals(List.of(USD)))))
 				.thenReturn(List.of(new TargetCurrencyRate(USD, new CurrencyRate(BigDecimal.ONE))));
 		final var fixedInstant = Instant.parse("2026-04-01T10:00:00Z");
 		final var clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
 		final var converter = new CurrencyConverter(provider, clock);
 
-		// When
 		final var result = converter.getCurrencyRate(ARS, USD);
 
-		// Then
 		assertThat(result.fromCurrency(), is(ARS));
 		assertThat(result.toCurrency(), is(USD));
 		assertThat(result.rate().rate(), comparesEqualTo(BigDecimal.valueOf(1.0)));
@@ -100,23 +91,20 @@ class CurrencyConverterTest {
 
 	@Test
 	void testGetSupportedCurrencies() {
-		// Given
 		final var provider = mock(CurrencyRateProvider.class);
 		final var expectedCurrencies = List.of(USD, ARS);
 		when(provider.getAvailableCurrencies()).thenReturn(expectedCurrencies);
 		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
 
-		// When
 		final var result = converter.getSupportedCurrencies();
 
-		// Then
 		assertThat(result, is(expectedCurrencies));
 	}
 
 	@Test
 	void convert_whenNoTargetCurrencies_returnsEmptyList() {
 		final var provider = mock(CurrencyRateProvider.class);
-		when(provider.getCurrencyRates(eq(ARS), eq(List.of()))).thenReturn(List.of());
+		when(provider.getCurrencyRates(eq(ARS), argThat(List::isEmpty))).thenReturn(List.of());
 		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
 
 		final var results = converter.convert(new Money(ARS, BigDecimal.ONE), List.of());
@@ -126,7 +114,6 @@ class CurrencyConverterTest {
 
 	@Test
 	void testConvertToMultipleCurrenciesOnDate() {
-		// Given
 		final var provider = mock(CurrencyRateProvider.class);
 		final var targets = List.of(USD, EUR);
 		final var date = LocalDate.of(2022, 1, 1);
@@ -136,10 +123,8 @@ class CurrencyConverterTest {
 						new TargetCurrencyRate(EUR, new CurrencyRate(BigDecimal.valueOf(0.85)))));
 		final var converter = new CurrencyConverter(provider, Clock.systemUTC());
 
-		// When
 		final var results = converter.convert(new Money(ARS, BigDecimal.valueOf(100)), targets, date);
 
-		// Then
 		final var expectedTimestamp = date.atStartOfDay().toInstant(ZoneOffset.UTC);
 		assertThat(results, hasSize(2));
 		assertThat(results.get(0).source().currency(), is(ARS));

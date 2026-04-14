@@ -1,5 +1,10 @@
-package ar.edu.itba.dps.exchange.domain;
+package ar.edu.itba.dps.exchange.domain.service;
 
+import ar.edu.itba.dps.exchange.domain.model.CurrencyConversionResponse;
+import ar.edu.itba.dps.exchange.domain.model.CurrencyRateResponse;
+import ar.edu.itba.dps.exchange.domain.model.Money;
+import ar.edu.itba.dps.exchange.domain.model.TargetCurrencyRate;
+import ar.edu.itba.dps.exchange.domain.port.CurrencyRateProvider;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Clock;
@@ -24,7 +29,7 @@ public class CurrencyConverter {
 		return toResponses(money, targetRates, Instant.now(clock));
 	}
 
-    public CurrencyRateResponse getCurrencyRate(final Currency from, final Currency to) {
+	public CurrencyRateResponse getCurrencyRate(final Currency from, final Currency to) {
 		final var targetRate = this.currencyRateProvider.getCurrencyRates(from, List.of(to)).getFirst();
 		return new CurrencyRateResponse(from, targetRate.target(), targetRate.currencyRate(), Instant.now(clock));
 	}

@@ -1,4 +1,6 @@
-package ar.edu.itba.dps.exchange.domain;
+package ar.edu.itba.dps.exchange.domain.port;
+
+import ar.edu.itba.dps.exchange.domain.model.TargetCurrencyRate;
 
 import java.time.LocalDate;
 import java.util.Currency;

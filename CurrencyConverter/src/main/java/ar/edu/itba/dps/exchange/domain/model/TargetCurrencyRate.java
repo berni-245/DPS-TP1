@@ -1,4 +1,4 @@
-package ar.edu.itba.dps.exchange.domain;
+package ar.edu.itba.dps.exchange.domain.model;
 
 import java.util.Currency;
 

@@ -1,7 +1,8 @@
-package ar.edu.itba.dps.exchange.domain;
+package ar.edu.itba.dps.exchange.domain.exception;
 
 /**
- * Base type for failures when obtaining currency rates from a {@link CurrencyRateProvider}.
+ * Base type for failures when obtaining currency rates from a
+ * {@link ar.edu.itba.dps.exchange.domain.port.CurrencyRateProvider}.
  */
 public abstract class CurrencyRateProviderException extends RuntimeException {
 

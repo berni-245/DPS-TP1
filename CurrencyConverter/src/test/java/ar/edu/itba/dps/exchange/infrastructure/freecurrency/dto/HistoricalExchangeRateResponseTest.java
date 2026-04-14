@@ -1,4 +1,4 @@
-package ar.edu.itba.dps.exchange.infrastructure.api;
+package ar.edu.itba.dps.exchange.infrastructure.freecurrency.dto;
 
 import org.junit.jupiter.api.Test;
 
@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HistoricalExchangeRateResponseTest {
