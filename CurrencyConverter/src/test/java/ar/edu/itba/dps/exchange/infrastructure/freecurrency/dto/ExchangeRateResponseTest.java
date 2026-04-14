@@ -11,17 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExchangeRateResponseTest {
 
+	private static final String USD_CODE = "USD";
+	private static final String EUR_CODE = "EUR";
+	private static final String EXCHANGE_DATA_SNIPPET = "exchange data";
+
 	@Test
 	void getExchangeWhenDataNullThrows() {
 		final var r = new ExchangeRateResponse(null);
-		final var ex = assertThrows(IllegalStateException.class, () -> r.getExchange("USD"));
-		assertThat(ex.getMessage(), containsString("exchange data"));
+		final var ex = assertThrows(IllegalStateException.class, () -> r.getExchange(USD_CODE));
+		assertThat(ex.getMessage(), containsString(EXCHANGE_DATA_SNIPPET));
 	}
 
 	@Test
 	void getExchangeWhenCurrencyMissingThrows() {
-		final var r = new ExchangeRateResponse(Map.of("EUR", BigDecimal.ONE));
-		final var ex = assertThrows(IllegalStateException.class, () -> r.getExchange("USD"));
-		assertThat(ex.getMessage(), containsString("USD"));
+		final var r = new ExchangeRateResponse(Map.of(EUR_CODE, BigDecimal.ONE));
+		final var ex = assertThrows(IllegalStateException.class, () -> r.getExchange(USD_CODE));
+		assertThat(ex.getMessage(), containsString(USD_CODE));
 	}
 }

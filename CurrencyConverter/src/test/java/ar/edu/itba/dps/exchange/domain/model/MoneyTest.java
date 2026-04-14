@@ -11,17 +11,25 @@ import static org.hamcrest.Matchers.is;
 
 class MoneyTest {
 
-	private static final Currency USD = Currency.getInstance("USD");
-	private static final Currency EUR = Currency.getInstance("EUR");
+	private static final String USD_CODE = "USD";
+	private static final String EUR_CODE = "EUR";
+	private static final Currency USD = Currency.getInstance(USD_CODE);
+	private static final Currency EUR = Currency.getInstance(EUR_CODE);
+	private static final String SOURCE_AMOUNT_PLAIN = "10";
+	private static final String CONVERSION_RATE_PLAIN = "0.9";
+	private static final String EXPECTED_CONVERTED_AMOUNT_PLAIN = "9";
+	private static final BigDecimal SOURCE_AMOUNT = new BigDecimal(SOURCE_AMOUNT_PLAIN);
+	private static final BigDecimal CONVERSION_RATE = new BigDecimal(CONVERSION_RATE_PLAIN);
+	private static final BigDecimal EXPECTED_CONVERTED_AMOUNT = new BigDecimal(EXPECTED_CONVERTED_AMOUNT_PLAIN);
 
 	@Test
 	void convertMultipliesAmountByRateAndUsesTargetCurrency() {
-		final var money = new Money(USD, new BigDecimal("10"));
-		final var line = new TargetCurrencyRate(EUR, new CurrencyRate(new BigDecimal("0.9")));
+		final var money = new Money(USD, SOURCE_AMOUNT);
+		final var line = new TargetCurrencyRate(EUR, new CurrencyRate(CONVERSION_RATE));
 
 		final var converted = money.convert(line);
 
 		assertThat(converted.currency(), is(EUR));
-		assertThat(converted.amount(), comparesEqualTo(new BigDecimal("9")));
+		assertThat(converted.amount(), comparesEqualTo(EXPECTED_CONVERTED_AMOUNT));
 	}
 }
