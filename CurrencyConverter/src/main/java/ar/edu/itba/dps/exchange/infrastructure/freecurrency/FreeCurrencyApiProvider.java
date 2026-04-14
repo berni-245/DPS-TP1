@@ -2,7 +2,7 @@ package ar.edu.itba.dps.exchange.infrastructure.freecurrency;
 
 import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateNotAvailableException;
 import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateRemoteException;
-import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateTransportException;
+import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateConnectionException;
 import ar.edu.itba.dps.exchange.domain.model.CurrencyRate;
 import ar.edu.itba.dps.exchange.domain.model.TargetCurrencyRate;
 import ar.edu.itba.dps.exchange.domain.port.CurrencyRateProvider;
@@ -11,7 +11,7 @@ import ar.edu.itba.dps.exchange.infrastructure.freecurrency.dto.ExchangeRateResp
 import ar.edu.itba.dps.exchange.infrastructure.freecurrency.dto.HistoricalExchangeRateResponse;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpClient;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpResponse;
-import ar.edu.itba.dps.exchange.infrastructure.http.HttpTransportException;
+import ar.edu.itba.dps.exchange.infrastructure.http.HttpClientException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.apache.logging.log4j.LogManager;
@@ -111,8 +111,8 @@ public class FreeCurrencyApiProvider implements CurrencyRateProvider {
 	private HttpResponse executeGet(final URI url, final Map<String, Object> queryParams) {
 		try {
 			return this.httpClient.get(url, queryParams, JSON_REQUEST_HEADERS);
-		} catch (final HttpTransportException e) {
-			throw new CurrencyRateTransportException("Failed to contact currency service", e);
+		} catch (final HttpClientException e) {
+			throw new CurrencyRateConnectionException("Failed to contact currency service", e);
 		}
 	}
 

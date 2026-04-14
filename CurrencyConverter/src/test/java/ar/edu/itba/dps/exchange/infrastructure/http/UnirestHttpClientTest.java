@@ -73,7 +73,7 @@ class UnirestHttpClientTest {
 		final var client = new UnirestHttpClient();
 		final var uri = URI.create("http://127.0.0.1:" + closedPort + "/");
 
-		assertThrows(HttpTransportException.class,
+		assertThrows(HttpClientException.class,
 				() -> client.get(uri, Map.of(), Map.of()));
 	}
 }

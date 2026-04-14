@@ -2,10 +2,10 @@ package ar.edu.itba.dps.exchange.infrastructure.freecurrency;
 
 import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateNotAvailableException;
 import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateRemoteException;
-import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateTransportException;
+import ar.edu.itba.dps.exchange.domain.exception.CurrencyRateConnectionException;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpClient;
 import ar.edu.itba.dps.exchange.infrastructure.http.HttpResponse;
-import ar.edu.itba.dps.exchange.infrastructure.http.HttpTransportException;
+import ar.edu.itba.dps.exchange.infrastructure.http.HttpClientException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -34,14 +34,14 @@ class FreeCurrencyApiProviderTest {
 	void getCurrencyRatesTransportFailureThrowsTransportException() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any()))
-				.thenThrow(new HttpTransportException("timeout", new RuntimeException("simulated")));
+				.thenThrow(new HttpClientException("timeout", new RuntimeException("simulated")));
 		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
 
-		final var ex = assertThrows(CurrencyRateTransportException.class,
+		final var ex = assertThrows(CurrencyRateConnectionException.class,
 				() -> provider.getCurrencyRates(EUR, List.of(USD)));
 
 		assertThat(ex.getMessage(), containsString("Failed to contact"));
-		assertThat(ex.getCause(), instanceOf(HttpTransportException.class));
+		assertThat(ex.getCause(), instanceOf(HttpClientException.class));
 	}
 
 	@Test
@@ -111,14 +111,14 @@ class FreeCurrencyApiProviderTest {
 	void transportFailureThrowsTransportException() {
 		final var http = mock(HttpClient.class);
 		when(http.get(any(URI.class), any(), any()))
-				.thenThrow(new HttpTransportException("timeout", new RuntimeException("simulated")));
+				.thenThrow(new HttpClientException("timeout", new RuntimeException("simulated")));
 		final var provider = new FreeCurrencyApiProvider(http, "https://example.com/v1/");
 
-		final var ex = assertThrows(CurrencyRateTransportException.class,
+		final var ex = assertThrows(CurrencyRateConnectionException.class,
 				() -> provider.getHistoricalCurrencyRates(EUR, List.of(USD), LocalDate.of(2022, 1, 1)));
 
 		assertThat(ex.getMessage(), containsString("Failed to contact"));
-		assertThat(ex.getCause(), instanceOf(HttpTransportException.class));
+		assertThat(ex.getCause(), instanceOf(HttpClientException.class));
 	}
 
 	@Test

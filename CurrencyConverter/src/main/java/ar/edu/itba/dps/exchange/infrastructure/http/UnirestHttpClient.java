@@ -22,9 +22,8 @@ public class UnirestHttpClient implements HttpClient {
 					.asString();
 			return new HttpResponse(response.getBody(), response.getStatus());
 		} catch (final Exception e) {
-			LOG.warn("HTTP GET failed for {}", url.getPath(), e);
-			throw new HttpTransportException("HTTP request failed: " + e.getMessage(), e);
-			// TODO ver nombre de excepción
+			LOG.warn("HTTP GET failed for {}", url.getPath());
+			throw new HttpClientException("HTTP request failed: " + e.getMessage(), e);
 		}
 	}
 }
